@@ -1,33 +1,42 @@
 "use client";
 
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { motion, Variants } from 'framer-motion';
-import { Wind, Shield, Zap, ArrowRight, Sparkles, Heart, AlertCircle } from 'lucide-react';
+import { Wind, Shield, Zap, ArrowRight, Sparkles, Heart, AlertCircle, Star, Clock } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import StormBackground from '@/components/grounding/StormBackground';
 
 const Index = () => {
   const navigate = useNavigate();
+  const [favorites, setFavorites] = useState<string[]>([]);
+  const [lastUsed, setLastUsed] = useState<string | null>(null);
+
+  useEffect(() => {
+    const savedFavs = localStorage.getItem('grounding-favorites');
+    const savedLast = localStorage.getItem('grounding-last-used');
+    if (savedFavs) setFavorites(JSON.parse(savedFavs));
+    if (savedLast) setLastUsed(savedLast);
+  }, []);
 
   const containerVariants: Variants = {
     hidden: { opacity: 0 },
     visible: {
       opacity: 1,
       transition: {
-        staggerChildren: 0.2,
-        delayChildren: 0.3
+        staggerChildren: 0.1,
+        delayChildren: 0.2
       }
     }
   };
 
   const itemVariants: Variants = {
-    hidden: { y: 30, opacity: 0 },
+    hidden: { y: 20, opacity: 0 },
     visible: { 
       y: 0, 
       opacity: 1,
-      transition: { duration: 0.8, ease: [0.22, 1, 0.36, 1] }
+      transition: { duration: 0.6, ease: [0.22, 1, 0.36, 1] }
     }
   };
 
@@ -39,7 +48,7 @@ const Index = () => {
         variants={containerVariants}
         initial="hidden"
         animate="visible"
-        className="z-10 w-full max-w-6xl mx-auto space-y-24"
+        className="z-10 w-full max-w-6xl mx-auto space-y-16 py-12"
       >
         <header className="text-center space-y-8">
           <motion.div variants={itemVariants} className="inline-flex items-center space-x-2 px-5 py-2 bg-white/5 rounded-full border border-white/10 text-sky-300 text-xs font-bold uppercase tracking-[0.2em] backdrop-blur-md">
@@ -48,16 +57,22 @@ const Index = () => {
           </motion.div>
           
           <motion.div variants={itemVariants} className="space-y-6">
-            <h1 className="text-7xl md:text-[120px] font-black text-white tracking-tighter leading-[0.85] uppercase">
+            <h1 className="text-6xl md:text-[100px] font-black text-white tracking-tighter leading-[0.85] uppercase">
               The Calm <br />
               <span className="text-transparent bg-clip-text bg-gradient-to-r from-sky-400 via-indigo-400 to-purple-400">After</span>
             </h1>
-            <p className="text-xl md:text-2xl text-white/40 font-light max-w-2xl mx-auto leading-relaxed tracking-tight">
+            <p className="text-lg md:text-xl text-white/40 font-light max-w-2xl mx-auto leading-relaxed tracking-tight">
               A sanctuary for emotional regulation. Ground yourself in the present moment when the world feels too loud.
             </p>
           </motion.div>
 
-          <motion.div variants={itemVariants} className="pt-4">
+          <motion.div variants={itemVariants} className="flex flex-wrap justify-center gap-4">
+            <Button 
+              onClick={() => navigate('/session')} 
+              className="bg-white text-slate-950 hover:bg-sky-100 rounded-full px-10 h-14 font-black uppercase tracking-widest text-xs shadow-2xl shadow-white/10 transition-all hover:scale-105"
+            >
+              Start Guided Journey
+            </Button>
             <Button 
               onClick={() => navigate('/tools')} 
               variant="outline"
@@ -67,6 +82,50 @@ const Index = () => {
             </Button>
           </motion.div>
         </header>
+
+        {(favorites.length > 0 || lastUsed) && (
+          <motion.section variants={itemVariants} className="space-y-6">
+            <div className="flex items-center justify-between px-4">
+              <h2 className="text-xs font-black text-white/20 uppercase tracking-[0.4em]">Quick Access</h2>
+              <Button variant="link" onClick={() => navigate('/tools')} className="text-sky-400/60 text-[10px] font-bold uppercase tracking-widest">View All Tools</Button>
+            </div>
+            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4">
+              {lastUsed && (
+                <Card 
+                  className="bg-white/[0.03] border-white/10 hover:bg-white/10 transition-all cursor-pointer group rounded-3xl"
+                  onClick={() => navigate('/tools')}
+                >
+                  <CardContent className="p-6 flex items-center space-x-4">
+                    <div className="w-10 h-10 bg-sky-500/20 rounded-xl flex items-center justify-center text-sky-400">
+                      <Clock className="w-5 h-5" />
+                    </div>
+                    <div>
+                      <div className="text-[10px] font-bold text-white/20 uppercase tracking-widest">Recent</div>
+                      <div className="text-sm font-bold text-white">Resume Last</div>
+                    </div>
+                  </CardContent>
+                </Card>
+              )}
+              {favorites.slice(0, 3).map((favId) => (
+                <Card 
+                  key={favId}
+                  className="bg-white/[0.03] border-white/10 hover:bg-white/10 transition-all cursor-pointer group rounded-3xl"
+                  onClick={() => navigate('/tools')}
+                >
+                  <CardContent className="p-6 flex items-center space-x-4">
+                    <div className="w-10 h-10 bg-amber-500/20 rounded-xl flex items-center justify-center text-amber-400">
+                      <Star className="w-5 h-5 fill-current" />
+                    </div>
+                    <div>
+                      <div className="text-[10px] font-bold text-white/20 uppercase tracking-widest">Favorite</div>
+                      <div className="text-sm font-bold text-white capitalize">{favId.replace('-', ' ')}</div>
+                    </div>
+                  </CardContent>
+                </Card>
+              ))}
+            </div>
+          </motion.section>
+        )}
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-10">
           <motion.div variants={itemVariants}>

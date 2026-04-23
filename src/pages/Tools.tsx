@@ -3,7 +3,7 @@
 import React, { useState, useEffect, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Wind, Droplets, Eye, X, ListChecks, Compass, Activity, ChevronLeft, Search, SlidersHorizontal, Star } from 'lucide-react';
+import { Wind, Droplets, Eye, X, ListChecks, Compass, Activity, ChevronLeft, Search, SlidersHorizontal, Star, Zap } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
@@ -108,6 +108,13 @@ const Tools = () => {
     localStorage.setItem('grounding-last-used', tool.id);
   };
 
+  const handleSurpriseMe = () => {
+    const targetIntensity = calmLevel < 40 ? 'High' : calmLevel < 70 ? 'Medium' : 'Low';
+    const matchingTools = tools.filter(t => t.intensity === targetIntensity);
+    const randomTool = matchingTools[Math.floor(Math.random() * matchingTools.length)] || tools[Math.floor(Math.random() * tools.length)];
+    handleToolClick(randomTool);
+  };
+
   const filteredTools = useMemo(() => {
     return tools
       .filter(tool => {
@@ -153,6 +160,13 @@ const Tools = () => {
         </div>
 
         <div className="flex flex-col md:flex-row items-center gap-4 w-full md:w-auto">
+          <Button 
+            onClick={handleSurpriseMe}
+            className="bg-sky-500/20 border border-sky-500/30 text-sky-400 hover:bg-sky-500/30 rounded-full px-6 h-12 font-bold uppercase tracking-widest text-[10px]"
+          >
+            <Zap className="mr-2 h-4 w-4 fill-current" /> Surprise Me
+          </Button>
+          
           <div className="relative w-full md:w-64">
             <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-white/20" />
             <Input 

@@ -3,7 +3,7 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
-import { ChevronRight, ChevronLeft, Home, CheckCircle2, Clock } from 'lucide-react';
+import { ChevronRight, ChevronLeft, Home, CheckCircle2, Clock, RotateCcw } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Progress } from '@/components/ui/progress';
 import StormBackground from '@/components/grounding/StormBackground';
@@ -64,16 +64,24 @@ const steps = [
 ];
 
 const Session = () => {
-  const [currentStep, setCurrentStep] = useState(0);
+  const [currentStep, setCurrentStep] = useState(() => {
+    const saved = localStorage.getItem('grounding-session-step');
+    return saved ? parseInt(saved, 10) : 0;
+  });
   const navigate = useNavigate();
   
   const step = steps[currentStep];
   const progress = ((currentStep + 1) / steps.length) * 100;
 
+  useEffect(() => {
+    localStorage.setItem('grounding-session-step', currentStep.toString());
+  }, [currentStep]);
+
   const nextStep = () => {
     if (currentStep < steps.length - 1) {
       setCurrentStep(currentStep + 1);
     } else {
+      localStorage.removeItem('grounding-session-step');
       navigate('/');
     }
   };
@@ -82,6 +90,11 @@ const Session = () => {
     if (currentStep > 0) {
       setCurrentStep(currentStep - 1);
     }
+  };
+
+  const resetSession = () => {
+    setCurrentStep(0);
+    localStorage.removeItem('grounding-session-step');
   };
 
   useEffect(() => {
@@ -114,7 +127,21 @@ const Session = () => {
         </Button>
         
         <div className="flex-1 max-w-md mx-12 space-y-2">
-          <Progress value={progress} className="h-1 bg-white/5" />
+          <div className="relative h-1 w-full bg-white/5 rounded-full overflow-hidden">
+            <motion.div 
+              className="absolute top-0 left-0 h-full bg-white"
+              initial={{ width: 0 }}
+              animate={{ width: `${progress}%` }}
+              transition={{ duration: 0.8, ease: "circOut" }}
+            />
+            {steps.map((_, i) => (
+              <div 
+                key={i} 
+                className="absolute top-0 w-1 h-full bg-black/20" 
+                style={{ left: `${(i / (steps.length - 1)) * 100}%` }}
+              />
+            ))}
+          </div>
           <div className="flex justify-between text-[10px] font-bold uppercase tracking-[0.2em] text-white/20">
             <span>Beginning</span>
             <span className="flex items-center"><Clock className="w-3 h-3 mr-1" /> Est. {step.estimate}</span>
@@ -123,17 +150,18 @@ const Session = () => {
         </div>
         
         <div className="flex items-center space-x-4">
+          <Button
+            variant="ghost"
+            size="icon"
+            onClick={resetSession}
+            className="text-white/20 hover:text-white/60 rounded-full w-10 h-10"
+            title="Reset Session"
+          >
+            <RotateCcw className="h-4 w-4" />
+          </Button>
           <div className="text-white/40 text-xs font-black tabular-nums">
             {currentStep + 1} / {steps.length}
           </div>
-          <Button
-            variant="ghost"
-            size="sm"
-            onClick={() => navigate('/')}
-            className="text-white/20 hover:text-white/60 text-[10px] font-bold uppercase tracking-widest"
-          >
-            Exit
-          </Button>
         </div>
       </div>
 
@@ -171,7 +199,11 @@ const Session = () => {
                   )}
                 </Button>
               </div>
-              <p className="text-white/20 text-[10px] font-bold uppercase tracking-[0.3em]">Press Space to Continue</p>
+              <div className="flex items-center space-x-4 text-white/20 text-[10px] font-bold uppercase tracking-[0.3em]">
+                <span>Space to Continue</span>
+                <span className="w-1 h-1 bg-white/10 rounded-full" />
+                <span>Esc to Exit</span>
+              </div>
             </div>
           </SessionStep>
         </AnimatePresence>
