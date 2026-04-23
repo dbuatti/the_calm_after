@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState, useEffect, useRef } from 'react';
-import { Volume2, VolumeX, Music, Wind, Waves, Bird, Settings2, Sparkles } from 'lucide-react';
+import { Volume2, VolumeX, Settings2, Sparkles } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Slider } from '@/components/ui/slider';
@@ -11,37 +11,19 @@ const AudioToggle = () => {
   const [isPlaying, setIsPlaying] = useState(false);
   const [showPanel, setShowPanel] = useState(false);
   const [masterVolume, setMasterVolume] = useState(30);
-  const [activeSound, setActiveSound] = useState<'ambient' | 'waves' | 'forest' | 'healing'>('healing');
-  const [calmLevel, setCalmLevel] = useState(50);
-  
-  const stormAudioRef = useRef<HTMLAudioElement | null>(null);
-  const calmAudioRef = useRef<HTMLAudioElement | null>(null);
-  const wavesAudioRef = useRef<HTMLAudioElement | null>(null);
-  const forestAudioRef = useRef<HTMLAudioElement | null>(null);
   const healingAudioRef = useRef<HTMLAudioElement | null>(null);
 
   useEffect(() => {
-    // Standard soundscapes
-    stormAudioRef.current = new Audio('https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3');
-    calmAudioRef.current = new Audio('https://www.soundhelix.com/examples/mp3/SoundHelix-Song-2.mp3');
-    wavesAudioRef.current = new Audio('https://www.soundhelix.com/examples/mp3/SoundHelix-Song-3.mp3');
-    forestAudioRef.current = new Audio('https://www.soundhelix.com/examples/mp3/SoundHelix-Song-4.mp3');
-    
-    // Your custom meditation track
+    // Initialize the healing meditation track
     const healingAudio = new Audio('/crystal-waves.mp3');
+    healingAudio.loop = true;
+    healingAudio.preload = 'auto';
+    
     healingAudio.addEventListener('error', (e) => {
       console.error("Failed to load crystal-waves.mp3. Ensure it is in the public/ folder.", e);
     });
+    
     healingAudioRef.current = healingAudio;
-    
-    const allRefs = [stormAudioRef, calmAudioRef, wavesAudioRef, forestAudioRef, healingAudioRef];
-    
-    allRefs.forEach(ref => {
-      if (ref.current) {
-        ref.current.loop = true;
-        ref.current.preload = 'auto';
-      }
-    });
 
     const handleKeyDown = (e: KeyboardEvent) => {
       if (e.key.toLowerCase() === 'm') {
@@ -49,68 +31,35 @@ const AudioToggle = () => {
       }
     };
 
-    const handleCalmUpdate = (e: any) => {
-      if (typeof e.detail === 'number') {
-        setCalmLevel(e.detail);
-      }
-    };
-
     window.addEventListener('keydown', handleKeyDown);
-    window.addEventListener('set-calm-level', handleCalmUpdate);
 
     return () => {
-      allRefs.forEach(ref => ref.current?.pause());
+      healingAudioRef.current?.pause();
       window.removeEventListener('keydown', handleKeyDown);
-      window.removeEventListener('set-calm-level', handleCalmUpdate);
     };
   }, []);
 
   useEffect(() => {
-    const allRefs = [stormAudioRef, calmAudioRef, wavesAudioRef, forestAudioRef, healingAudioRef];
-    
+    const audio = healingAudioRef.current;
+    if (!audio) return;
+
     if (!isPlaying) {
-      allRefs.forEach(ref => ref.current?.pause());
+      audio.pause();
       return;
     }
 
-    // Pause everything first
-    allRefs.forEach(ref => {
-      if (ref.current) {
-        ref.current.pause();
-        ref.current.volume = 0;
-      }
-    });
-
-    const playAudio = async (audio: HTMLAudioElement | null) => {
-      if (!audio) return;
+    const playAudio = async () => {
       try {
         audio.volume = masterVolume / 100;
         await audio.play();
       } catch (err) {
         console.error("Playback failed:", err);
-        if (activeSound === 'healing') {
-          toast.error("Could not play 'crystal-waves.mp3'. Check if the file exists in the public folder.");
-        }
+        toast.error("Could not play 'crystal-waves.mp3'. Check if the file exists in the public folder.");
       }
     };
 
-    if (activeSound === 'ambient') {
-      if (stormAudioRef.current && calmAudioRef.current) {
-        const stormBase = Math.max(0, Math.min(1, (60 - calmLevel) / 60));
-        const calmBase = Math.max(0, Math.min(1, (calmLevel - 40) / 60));
-        
-        stormAudioRef.current.volume = stormBase * (masterVolume / 100);
-        calmAudioRef.current.volume = calmBase * (masterVolume / 100);
-        
-        stormAudioRef.current.play().catch(() => {});
-        calmAudioRef.current.play().catch(() => {});
-      }
-    } 
-    else if (activeSound === 'waves') playAudio(wavesAudioRef.current);
-    else if (activeSound === 'forest') playAudio(forestAudioRef.current);
-    else if (activeSound === 'healing') playAudio(healingAudioRef.current);
-
-  }, [isPlaying, calmLevel, masterVolume, activeSound]);
+    playAudio();
+  }, [isPlaying, masterVolume]);
 
   return (
     <div className="fixed bottom-6 right-6 md:bottom-10 md:right-10 z-[60] flex flex-col items-end space-y-4">
@@ -137,40 +86,15 @@ const AudioToggle = () => {
             </div>
             
             <div className="space-y-4">
-              <span className="text-[10px] font-black uppercase tracking-widest text-white/40">Soundscape</span>
-              <div className="grid grid-cols-2 gap-2">
-                <Button
-                  variant="ghost"
-                  onClick={() => setActiveSound('healing')}
-                  className={`flex flex-col items-center h-20 rounded-2xl space-y-2 transition-all ${activeSound === 'healing' ? 'bg-white/10 text-amber-400' : 'bg-white/5 text-white/20'}`}
-                >
+              <span className="text-[10px] font-black uppercase tracking-widest text-white/40">Active Soundscape</span>
+              <div className="flex items-center p-4 bg-white/5 rounded-2xl space-x-4 border border-white/5">
+                <div className="w-10 h-10 bg-amber-500/10 rounded-xl flex items-center justify-center text-amber-400">
                   <Sparkles className="w-5 h-5" />
-                  <span className="text-[8px] font-bold uppercase tracking-tighter">Healing</span>
-                </Button>
-                <Button
-                  variant="ghost"
-                  onClick={() => setActiveSound('ambient')}
-                  className={`flex flex-col items-center h-20 rounded-2xl space-y-2 transition-all ${activeSound === 'ambient' ? 'bg-white/10 text-sky-400' : 'bg-white/5 text-white/20'}`}
-                >
-                  <Wind className="w-5 h-5" />
-                  <span className="text-[8px] font-bold uppercase tracking-tighter">Storm</span>
-                </Button>
-                <Button
-                  variant="ghost"
-                  onClick={() => setActiveSound('waves')}
-                  className={`flex flex-col items-center h-20 rounded-2xl space-y-2 transition-all ${activeSound === 'waves' ? 'bg-white/10 text-blue-400' : 'bg-white/5 text-white/20'}`}
-                >
-                  <Waves className="w-5 h-5" />
-                  <span className="text-[8px] font-bold uppercase tracking-tighter">Waves</span>
-                </Button>
-                <Button
-                  variant="ghost"
-                  onClick={() => setActiveSound('forest')}
-                  className={`flex flex-col items-center h-20 rounded-2xl space-y-2 transition-all ${activeSound === 'forest' ? 'bg-white/10 text-emerald-400' : 'bg-white/5 text-white/20'}`}
-                >
-                  <Bird className="w-5 h-5" />
-                  <span className="text-[8px] font-bold uppercase tracking-tighter">Forest</span>
-                </Button>
+                </div>
+                <div>
+                  <div className="text-[10px] font-bold text-white uppercase tracking-tight">Healing Frequencies</div>
+                  <div className="text-[8px] text-white/40 uppercase tracking-widest">Crystal Waves</div>
+                </div>
               </div>
             </div>
           </motion.div>
