@@ -1,11 +1,12 @@
 "use client";
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Wind, Droplets, Eye, X, ListChecks, Compass, Activity, ChevronLeft } from 'lucide-react';
+import { Wind, Droplets, Eye, X, ListChecks, Compass, Activity, ChevronLeft, Zap } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
+import { Badge } from '@/components/ui/badge';
 import StormBackground from '@/components/grounding/StormBackground';
 import BalloonBreathing from '@/components/grounding/BalloonBreathing';
 import ColdWaterExercise from '@/components/grounding/ColdWaterExercise';
@@ -21,6 +22,7 @@ const tools = [
     icon: Wind,
     color: 'text-sky-400',
     bg: 'bg-sky-500/10',
+    intensity: 'Low',
     description: 'Focus on the sensory details of air moving through your body.',
     component: <BalloonBreathing />,
   },
@@ -30,6 +32,7 @@ const tools = [
     icon: Activity,
     color: 'text-purple-400',
     bg: 'bg-purple-500/10',
+    intensity: 'Medium',
     description: 'A comprehensive self-awareness scan for pain, tension, and safety.',
     component: <SelfAwarenessPITCHES />,
   },
@@ -39,6 +42,7 @@ const tools = [
     icon: ListChecks,
     color: 'text-teal-400',
     bg: 'bg-teal-500/10',
+    intensity: 'Medium',
     description: 'Engage your logical mind by narrating actions or stating problems.',
     component: <NarrationTool />,
   },
@@ -48,6 +52,7 @@ const tools = [
     icon: Compass,
     color: 'text-amber-400',
     bg: 'bg-amber-500/10',
+    intensity: 'Low',
     description: 'Describe your environment in detail to anchor yourself in the present.',
     component: <OpenAwareness />,
   },
@@ -57,6 +62,7 @@ const tools = [
     icon: Droplets,
     color: 'text-blue-400',
     bg: 'bg-blue-500/10',
+    intensity: 'High',
     description: 'Use cold water to activate your nervous system\'s "calm" switch.',
     component: <ColdWaterExercise />,
   },
@@ -66,6 +72,7 @@ const tools = [
     icon: Eye,
     color: 'text-rose-400',
     bg: 'bg-rose-500/10',
+    intensity: 'Medium',
     description: 'Engage all your senses to return to the present moment.',
     component: <SensoryGrounding />,
   },
@@ -74,6 +81,16 @@ const tools = [
 const Tools = () => {
   const navigate = useNavigate();
   const [activeTool, setActiveTool] = useState<typeof tools[0] | null>(null);
+
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.code === 'Escape' && activeTool) {
+        setActiveTool(null);
+      }
+    };
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [activeTool]);
 
   return (
     <div className="min-h-screen flex flex-col p-6 md:p-12 relative overflow-hidden">
@@ -101,12 +118,17 @@ const Tools = () => {
               transition={{ delay: index * 0.05, duration: 0.6 }}
             >
               <Card 
-                className="bg-white/[0.03] backdrop-blur-2xl border-white/10 text-white hover:bg-white/[0.08] transition-all duration-500 cursor-pointer group h-full overflow-hidden rounded-[40px] active:scale-[0.98]"
+                className="bg-white/[0.03] backdrop-blur-2xl border-white/10 text-white hover:bg-white/[0.08] transition-all duration-500 cursor-pointer group h-full overflow-hidden rounded-[40px] active:scale-[0.98] relative"
                 onClick={() => setActiveTool(tool)}
               >
                 <CardContent className="p-10 flex flex-col h-full">
-                  <div className={`w-16 h-16 ${tool.bg} rounded-[22px] flex items-center justify-center ${tool.color} group-hover:scale-110 group-hover:rotate-3 transition-all duration-500 mb-8`}>
-                    <tool.icon className="w-8 h-8" />
+                  <div className="flex justify-between items-start mb-8">
+                    <div className={`w-16 h-16 ${tool.bg} rounded-[22px] flex items-center justify-center ${tool.color} group-hover:scale-110 group-hover:rotate-3 transition-all duration-500`}>
+                      <tool.icon className="w-8 h-8" />
+                    </div>
+                    <Badge variant="outline" className="bg-white/5 border-white/10 text-[10px] font-bold uppercase tracking-widest px-3 py-1">
+                      {tool.intensity} Intensity
+                    </Badge>
                   </div>
                   <div className="space-y-4">
                     <h3 className="text-2xl font-bold tracking-tight">{tool.title}</h3>
@@ -145,6 +167,11 @@ const Tools = () => {
 
               <div className="p-12 md:p-20 flex flex-col items-center space-y-12">
                 <div className="text-center space-y-4">
+                  <div className="flex items-center justify-center space-x-2">
+                    <Badge variant="outline" className="bg-white/5 border-white/10 text-[10px] font-bold uppercase tracking-widest px-3 py-1">
+                      {activeTool.intensity} Intensity
+                    </Badge>
+                  </div>
                   <h2 className="text-5xl font-black text-white tracking-tighter uppercase">{activeTool.title}</h2>
                   <p className="text-white/40 text-lg font-light max-w-md mx-auto">{activeTool.description}</p>
                 </div>
@@ -153,12 +180,15 @@ const Tools = () => {
                   {activeTool.component}
                 </div>
 
-                <Button
-                  onClick={() => setActiveTool(null)}
-                  className="bg-white text-slate-950 hover:bg-sky-100 px-20 h-16 rounded-full font-black text-lg shadow-2xl shadow-white/10 uppercase tracking-widest active:scale-95 transition-transform"
-                >
-                  I feel better
-                </Button>
+                <div className="flex flex-col items-center space-y-4">
+                  <Button
+                    onClick={() => setActiveTool(null)}
+                    className="bg-white text-slate-950 hover:bg-sky-100 px-20 h-16 rounded-full font-black text-lg shadow-2xl shadow-white/10 uppercase tracking-widest active:scale-95 transition-transform"
+                  >
+                    I feel better
+                  </Button>
+                  <p className="text-white/20 text-[10px] font-bold uppercase tracking-[0.3em]">Press ESC to Close</p>
+                </div>
               </div>
             </motion.div>
           </motion.div>

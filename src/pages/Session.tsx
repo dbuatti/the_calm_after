@@ -1,9 +1,9 @@
 "use client";
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
-import { ChevronRight, ChevronLeft, Home, CheckCircle2 } from 'lucide-react';
+import { ChevronRight, ChevronLeft, Home, CheckCircle2, X } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Progress } from '@/components/ui/progress';
 import StormBackground from '@/components/grounding/StormBackground';
@@ -11,6 +11,7 @@ import BreathingGuide from '@/components/grounding/BreathingGuide';
 import SessionStep from '@/components/grounding/SessionStep';
 import AudioToggle from '@/components/grounding/AudioToggle';
 import ColdWaterExercise from '@/components/grounding/ColdWaterExercise';
+import SensoryGrounding from '@/components/grounding/SensoryGrounding';
 
 const steps = [
   {
@@ -44,8 +45,9 @@ const steps = [
   {
     id: 'sensory',
     title: '5-4-3-2-1 Technique',
-    description: 'Name 5 things you see, 4 things you can touch (like fabric), 3 things you hear, 2 things you smell, and 1 thing you taste.',
+    description: 'Engage all your senses to return to the present moment. Follow the prompts below.',
     calmLevel: 90,
+    component: () => <SensoryGrounding />,
   },
   {
     id: 'calm',
@@ -76,6 +78,20 @@ const Session = () => {
     }
   };
 
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.code === 'Space' || e.code === 'Enter') {
+        e.preventDefault();
+        nextStep();
+      }
+      if (e.code === 'Escape') {
+        navigate('/');
+      }
+    };
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [currentStep]);
+
   return (
     <div className="min-h-screen flex flex-col items-center justify-center p-6 relative overflow-hidden">
       <StormBackground calmLevel={step.calmLevel} />
@@ -100,8 +116,18 @@ const Session = () => {
           </div>
         </div>
         
-        <div className="text-white/40 text-xs font-black w-12 text-right tabular-nums">
-          {currentStep + 1} / {steps.length}
+        <div className="flex items-center space-x-4">
+          <div className="text-white/40 text-xs font-black tabular-nums">
+            {currentStep + 1} / {steps.length}
+          </div>
+          <Button
+            variant="ghost"
+            size="sm"
+            onClick={() => navigate('/')}
+            className="text-white/20 hover:text-white/60 text-[10px] font-bold uppercase tracking-widest"
+          >
+            Exit
+          </Button>
         </div>
       </div>
 
@@ -114,29 +140,32 @@ const Session = () => {
           >
             {step.component && step.component(true)}
             
-            <div className="flex items-center justify-center space-x-6 mt-16">
-              {currentStep > 0 && (
-                <Button
-                  variant="outline"
-                  size="lg"
-                  onClick={prevStep}
-                  className="bg-transparent border-white/10 text-white/60 hover:text-white hover:bg-white/5 px-10 h-16 rounded-full font-bold uppercase tracking-widest text-xs transition-all"
-                >
-                  <ChevronLeft className="mr-2 h-4 w-4" /> Back
-                </Button>
-              )}
-              
-              <Button
-                size="lg"
-                onClick={nextStep}
-                className="bg-white text-slate-950 hover:bg-sky-100 px-14 h-16 rounded-full font-black uppercase tracking-widest text-sm shadow-2xl shadow-white/10 transition-all hover:scale-105 active:scale-95"
-              >
-                {currentStep === steps.length - 1 ? (
-                  <>Finish <CheckCircle2 className="ml-2 h-5 w-5" /></>
-                ) : (
-                  <>Continue <ChevronRight className="ml-2 h-5 w-5" /></>
+            <div className="flex flex-col items-center space-y-6 mt-16">
+              <div className="flex items-center justify-center space-x-6">
+                {currentStep > 0 && (
+                  <Button
+                    variant="outline"
+                    size="lg"
+                    onClick={prevStep}
+                    className="bg-transparent border-white/10 text-white/60 hover:text-white hover:bg-white/5 px-10 h-16 rounded-full font-bold uppercase tracking-widest text-xs transition-all"
+                  >
+                    <ChevronLeft className="mr-2 h-4 w-4" /> Back
+                  </Button>
                 )}
-              </Button>
+                
+                <Button
+                  size="lg"
+                  onClick={nextStep}
+                  className="bg-white text-slate-950 hover:bg-sky-100 px-14 h-16 rounded-full font-black uppercase tracking-widest text-sm shadow-2xl shadow-white/10 transition-all hover:scale-105 active:scale-95"
+                >
+                  {currentStep === steps.length - 1 ? (
+                    <>Finish <CheckCircle2 className="ml-2 h-5 w-5" /></>
+                  ) : (
+                    <>Continue <ChevronRight className="ml-2 h-5 w-5" /></>
+                  )}
+                </Button>
+              </div>
+              <p className="text-white/20 text-[10px] font-bold uppercase tracking-[0.3em]">Press Space to Continue</p>
             </div>
           </SessionStep>
         </AnimatePresence>

@@ -3,7 +3,7 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import { motion, Variants } from 'framer-motion';
-import { Wind, Shield, Zap, ArrowRight, Sparkles, Heart } from 'lucide-react';
+import { Wind, Shield, Zap, ArrowRight, Sparkles, Heart, AlertCircle } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import StormBackground from '@/components/grounding/StormBackground';
@@ -55,6 +55,16 @@ const Index = () => {
             <p className="text-xl md:text-2xl text-white/40 font-light max-w-2xl mx-auto leading-relaxed tracking-tight">
               A sanctuary for emotional regulation. Ground yourself in the present moment when the world feels too loud.
             </p>
+          </motion.div>
+
+          <motion.div variants={itemVariants} className="pt-4">
+            <Button 
+              onClick={() => navigate('/tools')} 
+              variant="outline"
+              className="bg-rose-500/10 border-rose-500/20 text-rose-400 hover:bg-rose-500/20 hover:text-rose-300 rounded-full px-8 h-14 font-bold uppercase tracking-widest text-xs transition-all"
+            >
+              <AlertCircle className="mr-2 h-4 w-4" /> Emergency Grounding
+            </Button>
           </motion.div>
         </header>
 
