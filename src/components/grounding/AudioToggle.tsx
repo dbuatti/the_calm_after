@@ -7,15 +7,12 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { Slider } from '@/components/ui/slider';
 import { toast } from "sonner";
 
-interface AudioToggleProps {
-  calmLevel: number;
-}
-
-const AudioToggle: React.FC<AudioToggleProps> = ({ calmLevel }) => {
+const AudioToggle = () => {
   const [isPlaying, setIsPlaying] = useState(false);
   const [showPanel, setShowPanel] = useState(false);
   const [masterVolume, setMasterVolume] = useState(30);
   const [activeSound, setActiveSound] = useState<'ambient' | 'waves' | 'forest' | 'healing'>('healing');
+  const [calmLevel, setCalmLevel] = useState(50);
   
   const stormAudioRef = useRef<HTMLAudioElement | null>(null);
   const calmAudioRef = useRef<HTMLAudioElement | null>(null);
@@ -51,11 +48,20 @@ const AudioToggle: React.FC<AudioToggleProps> = ({ calmLevel }) => {
         setIsPlaying(prev => !prev);
       }
     };
+
+    const handleCalmUpdate = (e: any) => {
+      if (typeof e.detail === 'number') {
+        setCalmLevel(e.detail);
+      }
+    };
+
     window.addEventListener('keydown', handleKeyDown);
+    window.addEventListener('set-calm-level', handleCalmUpdate);
 
     return () => {
       allRefs.forEach(ref => ref.current?.pause());
       window.removeEventListener('keydown', handleKeyDown);
+      window.removeEventListener('set-calm-level', handleCalmUpdate);
     };
   }, []);
 

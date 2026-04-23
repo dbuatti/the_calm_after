@@ -17,7 +17,6 @@ import OpenAwareness from '@/components/grounding/OpenAwareness';
 import SelfAwarenessPITCHES from '@/components/grounding/SelfAwarenessPITCHES';
 import SensoryGrounding from '@/components/grounding/SensoryGrounding';
 import EarthingGuide from '@/components/grounding/EarthingGuide';
-import AudioToggle from '@/components/grounding/AudioToggle';
 import MentalGym from '@/components/grounding/MentalGym';
 import SoothingSanctuary from '@/components/grounding/SoothingSanctuary';
 import BodyScanActive from '@/components/grounding/BodyScanActive';
@@ -201,6 +200,11 @@ const Tools = () => {
     localStorage.setItem('grounding-favorites', JSON.stringify(favorites));
   }, [favorites]);
 
+  useEffect(() => {
+    // Sync global calm level
+    window.dispatchEvent(new CustomEvent('set-calm-level', { detail: calmLevel }));
+  }, [calmLevel]);
+
   const toggleFavorite = (e: React.MouseEvent, id: string) => {
     e.stopPropagation();
     setFavorites(prev => prev.includes(id) ? prev.filter(f => f !== id) : [...prev, id]);
@@ -249,7 +253,6 @@ const Tools = () => {
   return (
     <div className="min-h-screen flex flex-col p-4 md:p-12 relative overflow-hidden">
       <StormBackground calmLevel={calmLevel} />
-      <AudioToggle calmLevel={calmLevel} />
       
       <header className="z-10 flex flex-col items-center mb-8 md:mb-12 max-w-6xl mx-auto w-full gap-6 md:gap-8">
         <div className="flex items-center justify-between w-full">

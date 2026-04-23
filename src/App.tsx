@@ -9,6 +9,7 @@ import Session from "./pages/Session";
 import Tools from "./pages/Tools";
 import NotFound from "./pages/NotFound";
 import BreathingShortcut from "./components/grounding/BreathingShortcut";
+import AudioToggle from "./components/grounding/AudioToggle";
 
 const queryClient = new QueryClient();
 
@@ -45,6 +46,7 @@ const App = () => (
       <Toaster />
       <Sonner />
       <BreathingShortcut />
+      <AudioToggle />
       <BrowserRouter future={{ v7_startTransition: true, v7_relativeSplatPath: true }}>
         <AppRoutes />
       </BrowserRouter>

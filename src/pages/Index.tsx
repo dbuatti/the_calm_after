@@ -9,7 +9,6 @@ import { Card, CardContent } from '@/components/ui/card';
 import StormBackground from '@/components/grounding/StormBackground';
 import MoodMeter from '@/components/grounding/MoodMeter';
 import MindfulQuotes from '@/components/grounding/MindfulQuotes';
-import AudioToggle from '@/components/grounding/AudioToggle';
 import CrisisFooter from '@/components/grounding/CrisisFooter';
 
 const Index = () => {
@@ -28,6 +27,9 @@ const Index = () => {
     if (hour < 12) setGreeting('Good Morning');
     else if (hour < 17) setGreeting('Good Afternoon');
     else setGreeting('Good Evening');
+
+    // Sync global calm level
+    window.dispatchEvent(new CustomEvent('set-calm-level', { detail: 20 }));
   }, []);
 
   const handleMoodSuggest = (intensity: string) => {
@@ -57,7 +59,6 @@ const Index = () => {
   return (
     <div className="min-h-screen flex flex-col items-center justify-center p-4 md:p-6 relative overflow-hidden">
       <StormBackground calmLevel={20} />
-      <AudioToggle calmLevel={20} />
       <MoodMeter onSuggest={handleMoodSuggest} />
       
       <motion.main 

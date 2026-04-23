@@ -9,7 +9,6 @@ import { Progress } from '@/components/ui/progress';
 import StormBackground from '@/components/grounding/StormBackground';
 import BreathingGuide from '@/components/grounding/BreathingGuide';
 import SessionStep from '@/components/grounding/SessionStep';
-import AudioToggle from '@/components/grounding/AudioToggle';
 import ColdWaterExercise from '@/components/grounding/ColdWaterExercise';
 import SensoryGrounding from '@/components/grounding/SensoryGrounding';
 
@@ -76,7 +75,9 @@ const Session = () => {
 
   useEffect(() => {
     localStorage.setItem('grounding-session-step', currentStep.toString());
-  }, [currentStep]);
+    // Sync global calm level
+    window.dispatchEvent(new CustomEvent('set-calm-level', { detail: step.calmLevel }));
+  }, [currentStep, step.calmLevel]);
 
   const nextStep = () => {
     if (currentStep < steps.length - 1) {
@@ -115,7 +116,6 @@ const Session = () => {
   return (
     <div className="min-h-screen flex flex-col items-center justify-center p-6 relative overflow-hidden">
       <StormBackground calmLevel={step.calmLevel} />
-      <AudioToggle calmLevel={step.calmLevel} />
 
       <div className="fixed top-0 left-0 w-full p-8 z-20 flex items-center justify-between max-w-7xl mx-auto left-1/2 -translate-x-1/2">
         <Button
