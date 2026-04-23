@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState, useEffect, useRef } from 'react';
-import { Volume2, VolumeX, Music, Wind, Waves, Bird, Settings2 } from 'lucide-react';
+import { Volume2, VolumeX, Music, Wind, Waves, Bird, Settings2, Sparkles } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Slider } from '@/components/ui/slider';
@@ -14,22 +14,31 @@ const AudioToggle: React.FC<AudioToggleProps> = ({ calmLevel }) => {
   const [isPlaying, setIsPlaying] = useState(false);
   const [showPanel, setShowPanel] = useState(false);
   const [masterVolume, setMasterVolume] = useState(30);
-  const [activeSound, setActiveSound] = useState<'ambient' | 'waves' | 'forest'>('ambient');
+  const [activeSound, setActiveSound] = useState<'ambient' | 'waves' | 'forest' | 'healing'>('ambient');
   
   const stormAudioRef = useRef<HTMLAudioElement | null>(null);
   const calmAudioRef = useRef<HTMLAudioElement | null>(null);
   const wavesAudioRef = useRef<HTMLAudioElement | null>(null);
   const forestAudioRef = useRef<HTMLAudioElement | null>(null);
+  const healingAudioRef = useRef<HTMLAudioElement | null>(null);
 
   useEffect(() => {
-    // Using placeholder audio URLs - in a real app these would be local assets
+    // Standard soundscapes
     stormAudioRef.current = new Audio('https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3');
     calmAudioRef.current = new Audio('https://www.soundhelix.com/examples/mp3/SoundHelix-Song-2.mp3');
     wavesAudioRef.current = new Audio('https://www.soundhelix.com/examples/mp3/SoundHelix-Song-3.mp3');
     forestAudioRef.current = new Audio('https://www.soundhelix.com/examples/mp3/SoundHelix-Song-4.mp3');
     
-    [stormAudioRef, calmAudioRef, wavesAudioRef, forestAudioRef].forEach(ref => {
-      if (ref.current) ref.current.loop = true;
+    // Your custom meditation track (expects file at public/crystal-waves.mp3)
+    healingAudioRef.current = new Audio('/crystal-waves.mp3');
+    
+    const allRefs = [stormAudioRef, calmAudioRef, wavesAudioRef, forestAudioRef, healingAudioRef];
+    
+    allRefs.forEach(ref => {
+      if (ref.current) {
+        ref.current.loop = true;
+        ref.current.preload = 'auto';
+      }
     });
 
     const handleKeyDown = (e: KeyboardEvent) => {
@@ -40,38 +49,48 @@ const AudioToggle: React.FC<AudioToggleProps> = ({ calmLevel }) => {
     window.addEventListener('keydown', handleKeyDown);
 
     return () => {
-      [stormAudioRef, calmAudioRef, wavesAudioRef, forestAudioRef].forEach(ref => ref.current?.pause());
+      allRefs.forEach(ref => ref.current?.pause());
       window.removeEventListener('keydown', handleKeyDown);
     };
   }, []);
 
   useEffect(() => {
-    const allRefs = [stormAudioRef, calmAudioRef, wavesAudioRef, forestAudioRef];
+    const allRefs = [stormAudioRef, calmAudioRef, wavesAudioRef, forestAudioRef, healingAudioRef];
     
     if (!isPlaying) {
       allRefs.forEach(ref => ref.current?.pause());
       return;
     }
 
+    // Pause everything first to ensure clean transitions
+    allRefs.forEach(ref => {
+      if (ref.current) {
+        ref.current.pause();
+        ref.current.volume = 0;
+      }
+    });
+
     if (activeSound === 'ambient') {
       stormAudioRef.current?.play().catch(() => {});
       calmAudioRef.current?.play().catch(() => {});
-      wavesAudioRef.current?.pause();
-      forestAudioRef.current?.pause();
       
       const stormBase = Math.max(0, Math.min(1, (60 - calmLevel) / 60));
       const calmBase = Math.max(0, Math.min(1, (calmLevel - 40) / 60));
       
       if (stormAudioRef.current) stormAudioRef.current.volume = stormBase * (masterVolume / 100);
       if (calmAudioRef.current) calmAudioRef.current.volume = calmBase * (masterVolume / 100);
-    } else if (activeSound === 'waves') {
+    } 
+    else if (activeSound === 'waves') {
       wavesAudioRef.current?.play().catch(() => {});
-      [stormAudioRef, calmAudioRef, forestAudioRef].forEach(ref => ref.current?.pause());
       if (wavesAudioRef.current) wavesAudioRef.current.volume = masterVolume / 100;
-    } else if (activeSound === 'forest') {
+    } 
+    else if (activeSound === 'forest') {
       forestAudioRef.current?.play().catch(() => {});
-      [stormAudioRef, calmAudioRef, wavesAudioRef].forEach(ref => ref.current?.pause());
       if (forestAudioRef.current) forestAudioRef.current.volume = masterVolume / 100;
+    }
+    else if (activeSound === 'healing') {
+      healingAudioRef.current?.play().catch(() => {});
+      if (healingAudioRef.current) healingAudioRef.current.volume = masterVolume / 100;
     }
 
   }, [isPlaying, calmLevel, masterVolume, activeSound]);
@@ -84,7 +103,7 @@ const AudioToggle: React.FC<AudioToggleProps> = ({ calmLevel }) => {
             initial={{ opacity: 0, y: 20, scale: 0.95 }}
             animate={{ opacity: 1, y: 0, scale: 1 }}
             exit={{ opacity: 0, y: 20, scale: 0.95 }}
-            className="bg-slate-950/40 backdrop-blur-3xl border border-white/10 p-6 rounded-[40px] w-72 shadow-2xl space-y-8"
+            className="bg-slate-950/40 backdrop-blur-3xl border border-white/10 p-6 rounded-[40px] w-80 shadow-2xl space-y-8"
           >
             <div className="space-y-4">
               <div className="flex justify-between items-center">
@@ -102,7 +121,7 @@ const AudioToggle: React.FC<AudioToggleProps> = ({ calmLevel }) => {
             
             <div className="space-y-4">
               <span className="text-[10px] font-black uppercase tracking-widest text-white/40">Soundscape</span>
-              <div className="grid grid-cols-3 gap-2">
+              <div className="grid grid-cols-2 gap-2">
                 <Button
                   variant="ghost"
                   onClick={() => setActiveSound('ambient')}
@@ -110,6 +129,14 @@ const AudioToggle: React.FC<AudioToggleProps> = ({ calmLevel }) => {
                 >
                   <Wind className="w-5 h-5" />
                   <span className="text-[8px] font-bold uppercase tracking-tighter">Storm</span>
+                </Button>
+                <Button
+                  variant="ghost"
+                  onClick={() => setActiveSound('healing')}
+                  className={`flex flex-col items-center h-20 rounded-2xl space-y-2 transition-all ${activeSound === 'healing' ? 'bg-white/10 text-amber-400' : 'bg-white/5 text-white/20'}`}
+                >
+                  <Sparkles className="w-5 h-5" />
+                  <span className="text-[8px] font-bold uppercase tracking-tighter">Healing</span>
                 </Button>
                 <Button
                   variant="ghost"
