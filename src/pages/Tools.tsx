@@ -3,7 +3,7 @@
 import React, { useState, useEffect, useMemo } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Wind, Droplets, Eye, X, ListChecks, Compass, Activity, ChevronLeft, Search, SlidersHorizontal, Star, Zap, Footprints, Clock, Brain, Heart, Accessibility, MapPin, Anchor } from 'lucide-react';
+import { Wind, Droplets, Eye, X, ListChecks, Compass, Activity, ChevronLeft, Search, SlidersHorizontal, Star, Zap, Footprints, Clock, Brain, Heart, Accessibility, MapPin, Anchor, Sparkles } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
@@ -23,8 +23,20 @@ import SoothingSanctuary from '@/components/grounding/SoothingSanctuary';
 import BodyScanActive from '@/components/grounding/BodyScanActive';
 import CognitiveReorientation from '@/components/grounding/CognitiveReorientation';
 import SensoryAnchors from '@/components/grounding/SensoryAnchors';
+import BreathingTechniques from '@/components/grounding/BreathingTechniques';
 
 const tools = [
+  {
+    id: 'breathing-tech',
+    title: 'Sensory Breathing',
+    icon: Sparkles,
+    color: 'text-indigo-400',
+    bg: 'bg-indigo-500/10',
+    intensity: 'Low',
+    duration: '4m',
+    description: 'Advanced techniques like Lion\'s Breath and Humming Bee for deep sensory regulation.',
+    component: <BreathingTechniques />,
+  },
   {
     id: 'reorientation',
     title: 'Cognitive Reorientation',
