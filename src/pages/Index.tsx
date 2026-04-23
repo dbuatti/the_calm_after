@@ -10,6 +10,7 @@ import StormBackground from '@/components/grounding/StormBackground';
 import MoodMeter from '@/components/grounding/MoodMeter';
 import MindfulQuotes from '@/components/grounding/MindfulQuotes';
 import AudioToggle from '@/components/grounding/AudioToggle';
+import CrisisFooter from '@/components/grounding/CrisisFooter';
 
 const Index = () => {
   const navigate = useNavigate();
@@ -215,6 +216,8 @@ const Index = () => {
             </Card>
           </motion.div>
         </div>
+
+        <CrisisFooter />
 
         <motion.footer variants={itemVariants} className="text-center pt-8 md:pt-12 pb-8">
           <div className="inline-flex items-center space-x-4 px-8 md:px-10 py-4 md:py-5 bg-white/5 rounded-full border border-white/10 text-white/20 text-xs md:sm font-medium backdrop-blur-sm">

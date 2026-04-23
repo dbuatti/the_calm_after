@@ -3,7 +3,7 @@
 import React, { useState, useEffect, useMemo } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Wind, Droplets, Eye, X, ListChecks, Compass, Activity, ChevronLeft, Search, SlidersHorizontal, Star, Zap, Footprints, Clock, Brain, Heart, Accessibility } from 'lucide-react';
+import { Wind, Droplets, Eye, X, ListChecks, Compass, Activity, ChevronLeft, Search, SlidersHorizontal, Star, Zap, Footprints, Clock, Brain, Heart, Accessibility, MapPin, Anchor } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
@@ -21,8 +21,32 @@ import AudioToggle from '@/components/grounding/AudioToggle';
 import MentalGym from '@/components/grounding/MentalGym';
 import SoothingSanctuary from '@/components/grounding/SoothingSanctuary';
 import BodyScanActive from '@/components/grounding/BodyScanActive';
+import CognitiveReorientation from '@/components/grounding/CognitiveReorientation';
+import SensoryAnchors from '@/components/grounding/SensoryAnchors';
 
 const tools = [
+  {
+    id: 'reorientation',
+    title: 'Cognitive Reorientation',
+    icon: MapPin,
+    color: 'text-sky-400',
+    bg: 'bg-sky-500/10',
+    intensity: 'Medium',
+    duration: '2m',
+    description: 'Anchor yourself in time and place by answering 7 key re-orienting questions.',
+    component: <CognitiveReorientation />,
+  },
+  {
+    id: 'anchors',
+    title: 'Sensory Anchors',
+    icon: Anchor,
+    color: 'text-emerald-400',
+    bg: 'bg-emerald-500/10',
+    intensity: 'Low',
+    duration: '3m',
+    description: 'Use physical objects like cool cloths or special items to ground your senses.',
+    component: <SensoryAnchors />,
+  },
   {
     id: 'mental-gym',
     title: 'Mental Gym',
