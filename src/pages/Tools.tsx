@@ -3,7 +3,7 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Home, Wind, Droplets, MessageSquare, Eye, X, ListChecks, Compass, Activity, ChevronLeft } from 'lucide-react';
+import { Wind, Droplets, Eye, X, ListChecks, Compass, Activity, ChevronLeft } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import StormBackground from '@/components/grounding/StormBackground';
@@ -12,6 +12,7 @@ import ColdWaterExercise from '@/components/grounding/ColdWaterExercise';
 import NarrationTool from '@/components/grounding/NarrationTool';
 import OpenAwareness from '@/components/grounding/OpenAwareness';
 import SelfAwarenessPITCHES from '@/components/grounding/SelfAwarenessPITCHES';
+import SensoryGrounding from '@/components/grounding/SensoryGrounding';
 
 const tools = [
   {
@@ -66,25 +67,7 @@ const tools = [
     color: 'text-rose-400',
     bg: 'bg-rose-500/10',
     description: 'Engage all your senses to return to the present moment.',
-    content: (
-      <div className="grid grid-cols-1 gap-4 text-left max-w-md mx-auto">
-        {[
-          { n: 5, t: "Things you see", s: "or 5 green things" },
-          { n: 4, t: "Things you can hear", s: "distant or near" },
-          { n: 3, t: "Things you can smell", s: "or favorite scents" },
-          { n: 2, t: "Things you can feel", s: "clothing, breeze" },
-          { n: 1, t: "Thing you can taste", s: "or imagine a taste" }
-        ].map((item) => (
-          <div key={item.n} className="flex items-center space-x-5 bg-white/5 p-5 rounded-[24px] border border-white/5 backdrop-blur-sm">
-            <span className="text-rose-400 font-black text-3xl w-10">{item.n}</span>
-            <div>
-              <div className="text-white font-bold text-lg">{item.t}</div>
-              <div className="text-white/40 text-sm font-medium">{item.s}</div>
-            </div>
-          </div>
-        ))}
-      </div>
-    ),
+    component: <SensoryGrounding />,
   },
 ];
 
@@ -118,7 +101,7 @@ const Tools = () => {
               transition={{ delay: index * 0.05, duration: 0.6 }}
             >
               <Card 
-                className="bg-white/[0.03] backdrop-blur-2xl border-white/10 text-white hover:bg-white/[0.08] transition-all duration-500 cursor-pointer group h-full overflow-hidden rounded-[40px]"
+                className="bg-white/[0.03] backdrop-blur-2xl border-white/10 text-white hover:bg-white/[0.08] transition-all duration-500 cursor-pointer group h-full overflow-hidden rounded-[40px] active:scale-[0.98]"
                 onClick={() => setActiveTool(tool)}
               >
                 <CardContent className="p-10 flex flex-col h-full">
@@ -167,12 +150,12 @@ const Tools = () => {
                 </div>
 
                 <div className="w-full">
-                  {activeTool.component || activeTool.content}
+                  {activeTool.component}
                 </div>
 
                 <Button
                   onClick={() => setActiveTool(null)}
-                  className="bg-white text-slate-950 hover:bg-sky-100 px-20 h-16 rounded-full font-black text-lg shadow-2xl shadow-white/10 uppercase tracking-widest"
+                  className="bg-white text-slate-950 hover:bg-sky-100 px-20 h-16 rounded-full font-black text-lg shadow-2xl shadow-white/10 uppercase tracking-widest active:scale-95 transition-transform"
                 >
                   I feel better
                 </Button>
