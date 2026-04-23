@@ -1,13 +1,25 @@
+"use client";
+
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Home, Wind, Fingerprint, MessageSquare, Eye, X } from 'lucide-react';
+import { Home, Wind, Droplets, MessageSquare, Eye, X } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import StormBackground from '@/components/grounding/StormBackground';
 import BreathingGuide from '@/components/grounding/BreathingGuide';
+import ColdWaterExercise from '@/components/grounding/ColdWaterExercise';
 
 const tools = [
+  {
+    id: 'dive',
+    title: 'Dive Reflex',
+    icon: Droplets,
+    color: 'text-blue-400',
+    bg: 'bg-blue-500/10',
+    description: 'Use cold water to activate your nervous system\'s "calm" switch.',
+    component: <ColdWaterExercise />,
+  },
   {
     id: 'breathe',
     title: 'Just Breathe',
@@ -18,19 +30,33 @@ const tools = [
     component: <BreathingGuide inhaleTime={4} holdTime={4} exhaleTime={4} isActive={true} />,
   },
   {
-    id: 'touch',
-    title: 'Physical Grounding',
-    icon: Fingerprint,
-    color: 'text-teal-400',
-    bg: 'bg-teal-500/10',
-    description: 'Focus on the physical sensations of your body.',
+    id: 'sensory',
+    title: '5-4-3-2-1 Technique',
+    icon: Eye,
+    color: 'text-amber-400',
+    bg: 'bg-amber-500/10',
+    description: 'Engage all your senses to return to the present moment.',
     content: (
-      <div className="space-y-6 text-center">
-        <p className="text-xl text-white/80">Press your palms together firmly for 5 seconds, then release. Repeat 3 times.</p>
-        <div className="flex justify-center space-x-2">
-          {[1, 2, 3].map((i) => (
-            <div key={i} className="w-3 h-3 rounded-full bg-teal-400/30" />
-          ))}
+      <div className="grid grid-cols-1 gap-4 text-left max-w-md mx-auto">
+        <div className="flex items-center space-x-3 bg-white/5 p-3 rounded-lg">
+          <span className="text-amber-400 font-bold text-xl w-6">5</span>
+          <span className="text-white/80">Things you see (a chair, a person, the window)</span>
+        </div>
+        <div className="flex items-center space-x-3 bg-white/5 p-3 rounded-lg">
+          <span className="text-amber-400 font-bold text-xl w-6">4</span>
+          <span className="text-white/80">Things you can touch (fabric, a plant leaf)</span>
+        </div>
+        <div className="flex items-center space-x-3 bg-white/5 p-3 rounded-lg">
+          <span className="text-amber-400 font-bold text-xl w-6">3</span>
+          <span className="text-white/80">Things you can hear</span>
+        </div>
+        <div className="flex items-center space-x-3 bg-white/5 p-3 rounded-lg">
+          <span className="text-amber-400 font-bold text-xl w-6">2</span>
+          <span className="text-white/80">Things you can smell</span>
+        </div>
+        <div className="flex items-center space-x-3 bg-white/5 p-3 rounded-lg">
+          <span className="text-amber-400 font-bold text-xl w-6">1</span>
+          <span className="text-white/80">Thing you can taste</span>
         </div>
       </div>
     ),
@@ -47,38 +73,6 @@ const tools = [
         <p className="text-2xl font-medium text-white italic">"I am safe in this moment."</p>
         <p className="text-2xl font-medium text-white italic">"This feeling is temporary."</p>
         <p className="text-2xl font-medium text-white italic">"I have the strength to navigate this."</p>
-      </div>
-    ),
-  },
-  {
-    id: 'sensory',
-    title: '5-4-3-2-1 Technique',
-    icon: Eye,
-    color: 'text-amber-400',
-    bg: 'bg-amber-500/10',
-    description: 'Engage all your senses to return to the present.',
-    content: (
-      <div className="grid grid-cols-1 gap-4 text-left max-w-md mx-auto">
-        <div className="flex items-center space-x-3 bg-white/5 p-3 rounded-lg">
-          <span className="text-amber-400 font-bold text-xl">5</span>
-          <span className="text-white/80">Things you can see</span>
-        </div>
-        <div className="flex items-center space-x-3 bg-white/5 p-3 rounded-lg">
-          <span className="text-amber-400 font-bold text-xl">4</span>
-          <span className="text-white/80">Things you can touch</span>
-        </div>
-        <div className="flex items-center space-x-3 bg-white/5 p-3 rounded-lg">
-          <span className="text-amber-400 font-bold text-xl">3</span>
-          <span className="text-white/80">Things you can hear</span>
-        </div>
-        <div className="flex items-center space-x-3 bg-white/5 p-3 rounded-lg">
-          <span className="text-amber-400 font-bold text-xl">2</span>
-          <span className="text-white/80">Things you can smell</span>
-        </div>
-        <div className="flex items-center space-x-3 bg-white/5 p-3 rounded-lg">
-          <span className="text-amber-400 font-bold text-xl">1</span>
-          <span className="text-white/80">Thing you can taste</span>
-        </div>
       </div>
     ),
   },
@@ -102,7 +96,7 @@ const Tools = () => {
           <Home className="h-6 w-6" />
         </Button>
         <h1 className="text-2xl font-bold text-white tracking-tight">Quick Toolbox</h1>
-        <div className="w-10" /> {/* Spacer */}
+        <div className="w-10" />
       </header>
 
       <main className="z-10 flex-1 max-w-5xl mx-auto w-full">
@@ -162,7 +156,7 @@ const Tools = () => {
                   <p className="text-white/60">{activeTool.description}</p>
                 </div>
 
-                <div className="w-full py-8">
+                <div className="w-full py-4">
                   {activeTool.component || activeTool.content}
                 </div>
 

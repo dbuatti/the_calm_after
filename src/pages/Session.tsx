@@ -1,3 +1,5 @@
+"use client";
+
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
@@ -8,54 +10,47 @@ import StormBackground from '@/components/grounding/StormBackground';
 import BreathingGuide from '@/components/grounding/BreathingGuide';
 import SessionStep from '@/components/grounding/SessionStep';
 import AudioToggle from '@/components/grounding/AudioToggle';
+import ColdWaterExercise from '@/components/grounding/ColdWaterExercise';
 
 const steps = [
   {
     id: 'intro',
     title: 'The Storm',
-    description: 'Acknowledge the feelings. They are like a storm passing through. Settle into a comfortable posture.',
+    description: 'Life can feel overwhelming, making you feel disconnected. But there is a way to bring yourself back. Acknowledge the feelings; they are like a storm passing through.',
     calmLevel: 10,
+  },
+  {
+    id: 'dive-reflex',
+    title: 'Physiology Change',
+    description: 'Let\'s activate the Mammalian Dive Reflex. This cools both body and mind, returning you to a calm state. Use a bowl of cold water or ice.',
+    calmLevel: 30,
+    component: () => <ColdWaterExercise />,
   },
   {
     id: 'breath-1',
     title: 'First Breath',
-    description: 'Let\'s take a deep breath together. Inhale deeply, hold for a moment, and release.',
-    calmLevel: 30,
+    description: 'As you bring your face back up, take a deep breath in together. Inhale deeply, hold, and release slowly.',
+    calmLevel: 50,
     component: (isActive: boolean) => (
       <BreathingGuide inhaleTime={4} holdTime={3} exhaleTime={4} isActive={isActive} />
     ),
   },
   {
-    id: 'touch',
-    title: 'Physical Touch',
-    description: 'Gently squeeze your hands together. Feel the pressure. Notice the sensation of your skin against skin.',
-    calmLevel: 50,
-  },
-  {
-    id: 'present',
-    title: 'Present Moment',
-    description: 'Repeat after me: "I am here. I am safe. The past is behind me, and I am in the now."',
+    id: 'environment',
+    title: 'Connect with Reality',
+    description: 'Stand in the room. Feel the ground beneath your feet. Gently guide your awareness back to your reality.',
     calmLevel: 70,
   },
   {
     id: 'sensory',
-    title: 'Sensory Awareness',
-    description: 'Notice 3 things you can see, 2 things you can hear, and the feeling of your feet on the ground.',
-    calmLevel: 85,
-  },
-  {
-    id: 'breath-2',
-    title: 'Final Breath',
-    description: 'One last rhythmic breath to anchor yourself in this calm space.',
-    calmLevel: 95,
-    component: (isActive: boolean) => (
-      <BreathingGuide inhaleTime={3} holdTime={2} exhaleTime={5} isActive={isActive} />
-    ),
+    title: '5-4-3-2-1 Technique',
+    description: 'Name 5 things you see, 4 things you can touch (like fabric), 3 things you hear, 2 things you smell, and 1 thing you taste.',
+    calmLevel: 90,
   },
   {
     id: 'calm',
     title: 'The Calm',
-    description: 'The storm has passed. Stay in this space as long as you need. You are grounded.',
+    description: 'How does your body feel now? You have the power to center yourself, even when life feels overwhelming. Stay in this space.',
     calmLevel: 100,
   },
 ];
