@@ -48,16 +48,16 @@ const Index = () => {
         variants={containerVariants}
         initial="hidden"
         animate="visible"
-        className="z-10 w-full max-w-6xl mx-auto space-y-20 py-12"
+        className="z-10 w-full max-w-6xl mx-auto space-y-24 py-12"
       >
-        <header className="text-center space-y-10">
+        <header className="text-center space-y-12">
           <motion.div variants={itemVariants} className="inline-flex items-center space-x-2 px-6 py-2.5 bg-white/5 rounded-full border border-white/10 text-sky-300 text-[10px] font-bold uppercase tracking-[0.3em] backdrop-blur-md shadow-[inset_0_1px_1px_rgba(255,255,255,0.05)]">
             <Sparkles className="w-3.5 h-3.5" />
             <span>Find your center</span>
           </motion.div>
           
           <motion.div variants={itemVariants} className="space-y-8">
-            <h1 className="text-7xl md:text-[120px] font-black text-white tracking-tighter leading-[0.8] uppercase text-glow">
+            <h1 className="text-7xl md:text-[130px] font-black tracking-tighter leading-[0.75] uppercase text-lume">
               The Calm <br />
               <span className="text-transparent bg-clip-text bg-gradient-to-r from-sky-400 via-indigo-400 to-amber-200">After</span>
             </h1>

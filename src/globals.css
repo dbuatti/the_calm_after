@@ -5,44 +5,24 @@
 @layer base {
   :root {
     /* Core Palette - Deep Sanctuary */
-    --background: 222 47% 4%;
+    --background: 222 47% 2%;
     --foreground: 210 40% 98%;
 
-    /* Atmospheric States */
-    --storm-deep: 222 47% 4%;
-    --storm-mid: 217 33% 12%;
-    --storm-accent: 210 100% 66%;
+    /* Atmospheric States - Refined Spectrum */
+    --storm-deep: 222 47% 2%;
+    --storm-mid: 217 33% 8%;
+    --storm-lume: 199 89% 48%;
     
     --calm-deep: 199 89% 48%;
-    --calm-mid: 45 93% 91%;
-    --calm-accent: 38 92% 50%;
+    --calm-mid: 38 92% 50%;
+    --calm-lume: 45 93% 91%;
 
-    /* UI Elements */
-    --card: 222 47% 6%;
+    /* UI Surfaces */
+    --card: 222 47% 4%;
     --card-foreground: 210 40% 98%;
-    --popover: 222 47% 4%;
-    --popover-foreground: 210 40% 98%;
-
-    --primary: 210 40% 98%;
-    --primary-foreground: 222.2 47.4% 11.2%;
-
-    --secondary: 217.2 32.6% 17.5%;
-    --secondary-foreground: 210 40% 98%;
-
-    --muted: 217.2 32.6% 17.5%;
-    --muted-foreground: 215 20.2% 65.1%;
-
-    --accent: 217.2 32.6% 17.5%;
-    --accent-foreground: 210 40% 98%;
-
-    --destructive: 0 62.8% 30.6%;
-    --destructive-foreground: 210 40% 98%;
-
-    --border: 217.2 32.6% 17.5%;
-    --input: 217.2 32.6% 17.5%;
-    --ring: 212.7 26.8% 83.9%;
-
-    --radius: 2.5rem;
+    --border: 217.2 32.6% 12%;
+    
+    --radius: 3rem;
   }
 }
 
@@ -56,18 +36,35 @@
   }
 }
 
-.glass-panel {
-  @apply bg-white/[0.02] backdrop-blur-3xl border border-white/10 shadow-[inset_0_1px_1px_rgba(255,255,255,0.05)];
+/* Advanced Glassmorphism */
+.glass-surface {
+  @apply bg-white/[0.01] backdrop-blur-3xl border border-white/5 shadow-[inset_0_1px_1px_rgba(255,255,255,0.05)];
+  position: relative;
 }
 
-.text-glow {
-  text-shadow: 0 0 30px rgba(255, 255, 255, 0.15);
+.glass-surface::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  padding: 1px;
+  background: linear-gradient(135deg, rgba(255,255,255,0.1) 0%, transparent 50%, rgba(255,255,255,0.02) 100%);
+  mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+  mask-composite: exclude;
+  pointer-events: none;
 }
 
-.storm-glow {
-  box-shadow: 0 0 40px -10px hsl(var(--storm-accent) / 0.2);
+.text-lume {
+  background: linear-gradient(to bottom, #fff 30%, rgba(255,255,255,0.5) 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  filter: drop-shadow(0 0 20px rgba(255,255,255,0.1));
 }
 
-.calm-glow {
-  box-shadow: 0 0 40px -10px hsl(var(--calm-accent) / 0.2);
+.storm-pulse {
+  box-shadow: 0 0 50px -10px hsla(199, 89%, 48%, 0.15);
+}
+
+.calm-pulse {
+  box-shadow: 0 0 50px -10px hsla(38, 92%, 50%, 0.15);
 }
