@@ -22,6 +22,7 @@ const AudioToggle: React.FC<AudioToggleProps> = ({ calmLevel }) => {
   const forestAudioRef = useRef<HTMLAudioElement | null>(null);
 
   useEffect(() => {
+    // Using placeholder audio URLs - in a real app these would be local assets
     stormAudioRef.current = new Audio('https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3');
     calmAudioRef.current = new Audio('https://www.soundhelix.com/examples/mp3/SoundHelix-Song-2.mp3');
     wavesAudioRef.current = new Audio('https://www.soundhelix.com/examples/mp3/SoundHelix-Song-3.mp3');

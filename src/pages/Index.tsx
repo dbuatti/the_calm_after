@@ -91,13 +91,20 @@ const Index = () => {
             >
               Start Guided Journey
             </Button>
-            <Button 
-              onClick={() => navigate('/tools')} 
-              variant="outline"
-              className="bg-rose-500/5 border-rose-500/20 text-rose-400 hover:bg-rose-500/10 hover:text-rose-300 rounded-full px-8 md:px-10 h-14 md:h-16 font-bold uppercase tracking-widest text-[10px] md:text-xs transition-all"
-            >
-              <AlertCircle className="mr-2 h-4 w-4" /> Emergency Grounding
-            </Button>
+            <div className="relative">
+              <motion.div 
+                className="absolute inset-0 bg-rose-500/20 rounded-full blur-xl"
+                animate={{ scale: [1, 1.2, 1], opacity: [0.2, 0.5, 0.2] }}
+                transition={{ duration: 2, repeat: Infinity }}
+              />
+              <Button 
+                onClick={() => navigate('/tools')} 
+                variant="outline"
+                className="relative bg-rose-500/5 border-rose-500/20 text-rose-400 hover:bg-rose-500/10 hover:text-rose-300 rounded-full px-8 md:px-10 h-14 md:h-16 font-bold uppercase tracking-widest text-[10px] md:text-xs transition-all"
+              >
+                <AlertCircle className="mr-2 h-4 w-4" /> Emergency Grounding
+              </Button>
+            </div>
           </motion.div>
         </header>
 
