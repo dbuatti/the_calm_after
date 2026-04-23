@@ -3,7 +3,7 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { motion, Variants } from 'framer-motion';
-import { Wind, Shield, ArrowRight, Sparkles, Heart, AlertCircle, Star, Clock } from 'lucide-react';
+import { Wind, Shield, ArrowRight, Sparkles, Heart, AlertCircle, Star, Clock, Play } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import StormBackground from '@/components/grounding/StormBackground';
@@ -84,7 +84,7 @@ const Index = () => {
             </p>
           </motion.div>
 
-          <motion.div variants={itemVariants} className="flex flex-col sm:flex-row justify-center gap-4 md:gap-6 px-4">
+          <motion.div variants={itemVariants} className="flex flex-wrap justify-center gap-4 md:gap-6 px-4">
             <Button 
               onClick={() => navigate('/session')} 
               className="bg-white text-slate-950 hover:bg-sky-100 rounded-full px-10 md:px-12 h-14 md:h-16 font-black uppercase tracking-widest text-[10px] md:text-xs shadow-2xl shadow-white/10 transition-all hover:scale-105 active:scale-95"
@@ -93,14 +93,19 @@ const Index = () => {
             </Button>
             <Button 
               onClick={() => {
-                // Trigger the global breathing modal by dispatching a custom event or using a shared state
-                // For now, we'll just navigate to tools or we can use a simple window event
                 window.dispatchEvent(new KeyboardEvent('keydown', { key: 'b' }));
               }} 
               variant="outline"
               className="bg-white/5 border-white/10 text-white hover:bg-white/10 rounded-full px-10 md:px-12 h-14 md:h-16 font-bold uppercase tracking-widest text-[10px] md:text-xs transition-all"
             >
               <Wind className="mr-2 h-4 w-4" /> Quick Breathe
+            </Button>
+            <Button 
+              onClick={() => window.open('https://www.youtube.com/watch?v=awEybpniEYQ', '_blank')} 
+              variant="outline"
+              className="bg-white/5 border-white/10 text-white hover:bg-white/10 rounded-full px-10 md:px-12 h-14 md:h-16 font-bold uppercase tracking-widest text-[10px] md:text-xs transition-all"
+            >
+              <Play className="mr-2 h-4 w-4" /> Guided Video
             </Button>
             <div className="relative">
               <motion.div 
