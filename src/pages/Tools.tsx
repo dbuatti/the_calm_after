@@ -1,12 +1,14 @@
 "use client";
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Wind, Droplets, Eye, X, ListChecks, Compass, Activity, ChevronLeft, Zap } from 'lucide-react';
+import { Wind, Droplets, Eye, X, ListChecks, Compass, Activity, ChevronLeft, Search, SlidersHorizontal } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
+import { Input } from '@/components/ui/input';
+import { Slider } from '@/components/ui/slider';
 import StormBackground from '@/components/grounding/StormBackground';
 import BalloonBreathing from '@/components/grounding/BalloonBreathing';
 import ColdWaterExercise from '@/components/grounding/ColdWaterExercise';
@@ -14,6 +16,7 @@ import NarrationTool from '@/components/grounding/NarrationTool';
 import OpenAwareness from '@/components/grounding/OpenAwareness';
 import SelfAwarenessPITCHES from '@/components/grounding/SelfAwarenessPITCHES';
 import SensoryGrounding from '@/components/grounding/SensoryGrounding';
+import AudioToggle from '@/components/grounding/AudioToggle';
 
 const tools = [
   {
@@ -81,6 +84,18 @@ const tools = [
 const Tools = () => {
   const navigate = useNavigate();
   const [activeTool, setActiveTool] = useState<typeof tools[0] | null>(null);
+  const [searchQuery, setSearchQuery] = useState('');
+  const [intensityFilter, setIntensityFilter] = useState<string | null>(null);
+  const [calmLevel, setCalmLevel] = useState(60);
+
+  const filteredTools = useMemo(() => {
+    return tools.filter(tool => {
+      const matchesSearch = tool.title.toLowerCase().includes(searchQuery.toLowerCase()) || 
+                           tool.description.toLowerCase().includes(searchQuery.toLowerCase());
+      const matchesIntensity = intensityFilter ? tool.intensity === intensityFilter : true;
+      return matchesSearch && matchesIntensity;
+    });
+  }, [searchQuery, intensityFilter]);
 
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
@@ -94,51 +109,119 @@ const Tools = () => {
 
   return (
     <div className="min-h-screen flex flex-col p-6 md:p-12 relative overflow-hidden">
-      <StormBackground calmLevel={60} />
+      <StormBackground calmLevel={calmLevel} />
+      <AudioToggle calmLevel={calmLevel} />
       
-      <header className="z-10 flex items-center justify-between mb-16 max-w-6xl mx-auto w-full">
-        <Button
-          variant="ghost"
-          onClick={() => navigate('/')}
-          className="text-white/40 hover:text-white hover:bg-white/10 rounded-full px-6 h-12 font-bold uppercase tracking-widest text-xs"
-        >
-          <ChevronLeft className="mr-2 h-4 w-4" /> Back Home
-        </Button>
-        <h1 className="text-4xl font-black text-white tracking-tighter uppercase">Toolbox</h1>
-        <div className="w-32 hidden md:block" />
+      <header className="z-10 flex flex-col md:flex-row items-center justify-between mb-12 max-w-6xl mx-auto w-full gap-8">
+        <div className="flex items-center space-x-4">
+          <Button
+            variant="ghost"
+            onClick={() => navigate('/')}
+            className="text-white/40 hover:text-white hover:bg-white/10 rounded-full px-6 h-12 font-bold uppercase tracking-widest text-xs"
+          >
+            <ChevronLeft className="mr-2 h-4 w-4" /> Home
+          </Button>
+          <h1 className="text-4xl font-black text-white tracking-tighter uppercase">Toolbox</h1>
+        </div>
+
+        <div className="flex flex-col md:flex-row items-center gap-4 w-full md:w-auto">
+          <div className="relative w-full md:w-64">
+            <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-white/20" />
+            <Input 
+              placeholder="Search tools..." 
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              className="bg-white/5 border-white/10 rounded-full pl-12 h-12 text-white placeholder:text-white/20 focus:ring-sky-500/50"
+            />
+          </div>
+          
+          <div className="flex bg-white/5 p-1 rounded-full border border-white/10">
+            {['Low', 'Medium', 'High'].map((intensity) => (
+              <Button
+                key={intensity}
+                variant="ghost"
+                size="sm"
+                onClick={() => setIntensityFilter(intensityFilter === intensity ? null : intensity)}
+                className={`rounded-full px-4 h-10 text-[10px] font-bold uppercase tracking-widest transition-all ${intensityFilter === intensity ? 'bg-white text-slate-950' : 'text-white/40 hover:text-white'}`}
+              >
+                {intensity}
+              </Button>
+            ))}
+          </div>
+        </div>
       </header>
 
-      <main className="z-10 flex-1 max-w-6xl mx-auto w-full">
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-          {tools.map((tool, index) => (
-            <motion.div
-              key={tool.id}
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: index * 0.05, duration: 0.6 }}
-            >
-              <Card 
-                className="bg-white/[0.03] backdrop-blur-2xl border-white/10 text-white hover:bg-white/[0.08] transition-all duration-500 cursor-pointer group h-full overflow-hidden rounded-[40px] active:scale-[0.98] relative"
-                onClick={() => setActiveTool(tool)}
-              >
-                <CardContent className="p-10 flex flex-col h-full">
-                  <div className="flex justify-between items-start mb-8">
-                    <div className={`w-16 h-16 ${tool.bg} rounded-[22px] flex items-center justify-center ${tool.color} group-hover:scale-110 group-hover:rotate-3 transition-all duration-500`}>
-                      <tool.icon className="w-8 h-8" />
-                    </div>
-                    <Badge variant="outline" className="bg-white/5 border-white/10 text-[10px] font-bold uppercase tracking-widest px-3 py-1">
-                      {tool.intensity} Intensity
-                    </Badge>
-                  </div>
-                  <div className="space-y-4">
-                    <h3 className="text-2xl font-bold tracking-tight">{tool.title}</h3>
-                    <p className="text-white/40 text-sm leading-relaxed font-light">{tool.description}</p>
-                  </div>
-                </CardContent>
-              </Card>
-            </motion.div>
-          ))}
+      <main className="z-10 flex-1 max-w-6xl mx-auto w-full space-y-12">
+        <div className="bg-white/[0.03] backdrop-blur-xl border border-white/10 p-8 rounded-[32px] flex flex-col md:flex-row items-center justify-between gap-8">
+          <div className="flex items-center space-x-4">
+            <div className="w-12 h-12 bg-white/5 rounded-2xl flex items-center justify-center text-white/40">
+              <SlidersHorizontal className="w-6 h-6" />
+            </div>
+            <div>
+              <h4 className="text-sm font-bold text-white uppercase tracking-widest">Environment Control</h4>
+              <p className="text-xs text-white/40">Adjust the storm intensity to match your mood.</p>
+            </div>
+          </div>
+          <div className="flex-1 max-w-md w-full flex items-center space-x-6">
+            <span className="text-[10px] font-bold text-white/20 uppercase tracking-widest">Stormy</span>
+            <Slider 
+              value={[calmLevel]} 
+              onValueChange={(v) => setCalmLevel(v[0])} 
+              max={100} 
+              step={1}
+              className="cursor-pointer"
+            />
+            <span className="text-[10px] font-bold text-white/20 uppercase tracking-widest">Clear</span>
+          </div>
         </div>
+
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+          <AnimatePresence mode="popLayout">
+            {filteredTools.map((tool, index) => (
+              <motion.div
+                key={tool.id}
+                layout
+                initial={{ opacity: 0, scale: 0.9 }}
+                animate={{ opacity: 1, scale: 1 }}
+                exit={{ opacity: 0, scale: 0.9 }}
+                transition={{ duration: 0.4, ease: [0.22, 1, 0.36, 1] }}
+              >
+                <Card 
+                  className="bg-white/[0.03] backdrop-blur-2xl border-white/10 text-white hover:bg-white/[0.08] transition-all duration-500 cursor-pointer group h-full overflow-hidden rounded-[40px] active:scale-[0.98] relative"
+                  onClick={() => setActiveTool(tool)}
+                >
+                  <CardContent className="p-10 flex flex-col h-full">
+                    <div className="flex justify-between items-start mb-8">
+                      <div className={`w-16 h-16 ${tool.bg} rounded-[22px] flex items-center justify-center ${tool.color} group-hover:scale-110 group-hover:rotate-3 transition-all duration-500`}>
+                        <tool.icon className="w-8 h-8" />
+                      </div>
+                      <Badge variant="outline" className="bg-white/5 border-white/10 text-[10px] font-bold uppercase tracking-widest px-3 py-1">
+                        {tool.intensity}
+                      </Badge>
+                    </div>
+                    <div className="space-y-4">
+                      <h3 className="text-2xl font-bold tracking-tight">{tool.title}</h3>
+                      <p className="text-white/40 text-sm leading-relaxed font-light">{tool.description}</p>
+                    </div>
+                  </CardContent>
+                </Card>
+              </motion.div>
+            ))}
+          </AnimatePresence>
+        </div>
+        
+        {filteredTools.length === 0 && (
+          <motion.div 
+            initial={{ opacity: 0 }} 
+            animate={{ opacity: 1 }} 
+            className="text-center py-24 space-y-4"
+          >
+            <p className="text-white/20 text-xl font-light italic">No tools match your search...</p>
+            <Button variant="link" onClick={() => { setSearchQuery(''); setIntensityFilter(null); }} className="text-sky-400">
+              Clear all filters
+            </Button>
+          </motion.div>
+        )}
       </main>
 
       <AnimatePresence>
