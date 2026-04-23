@@ -3,7 +3,7 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Home, Wind, Droplets, MessageSquare, Eye, X, ListChecks, Compass, Activity } from 'lucide-react';
+import { Home, Wind, Droplets, MessageSquare, Eye, X, ListChecks, Compass, Activity, ChevronLeft } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import StormBackground from '@/components/grounding/StormBackground';
@@ -67,27 +67,22 @@ const tools = [
     bg: 'bg-rose-500/10',
     description: 'Engage all your senses to return to the present moment.',
     content: (
-      <div className="grid grid-cols-1 gap-4 text-left max-w-md mx-auto">
-        <div className="flex items-center space-x-3 bg-white/5 p-3 rounded-lg">
-          <span className="text-rose-400 font-bold text-xl w-6">5</span>
-          <span className="text-white/80">Things you see (or 5 green things)</span>
-        </div>
-        <div className="flex items-center space-x-3 bg-white/5 p-3 rounded-lg">
-          <span className="text-rose-400 font-bold text-xl w-6">4</span>
-          <span className="text-white/80">Things you can hear</span>
-        </div>
-        <div className="flex items-center space-x-3 bg-white/5 p-3 rounded-lg">
-          <span className="text-rose-400 font-bold text-xl w-6">3</span>
-          <span className="text-white/80">Things you can smell</span>
-        </div>
-        <div className="flex items-center space-x-3 bg-white/5 p-3 rounded-lg">
-          <span className="text-rose-400 font-bold text-xl w-6">2</span>
-          <span className="text-white/80">Things you can feel (cool breeze, clothing)</span>
-        </div>
-        <div className="flex items-center space-x-3 bg-white/5 p-3 rounded-lg">
-          <span className="text-rose-400 font-bold text-xl w-6">1</span>
-          <span className="text-white/80">Thing you can taste</span>
-        </div>
+      <div className="grid grid-cols-1 gap-3 text-left max-w-md mx-auto">
+        {[
+          { n: 5, t: "Things you see", s: "or 5 green things" },
+          { n: 4, t: "Things you can hear", s: "distant or near" },
+          { n: 3, t: "Things you can smell", s: "or favorite scents" },
+          { n: 2, t: "Things you can feel", s: "clothing, breeze" },
+          { n: 1, t: "Thing you can taste", s: "or imagine a taste" }
+        ].map((item) => (
+          <div key={item.n} className="flex items-center space-x-4 bg-white/5 p-4 rounded-2xl border border-white/5">
+            <span className="text-rose-400 font-black text-2xl w-8">{item.n}</span>
+            <div>
+              <div className="text-white font-bold">{item.t}</div>
+              <div className="text-white/40 text-sm">{item.s}</div>
+            </div>
+          </div>
+        ))}
       </div>
     ),
   },
@@ -101,17 +96,16 @@ const Tools = () => {
     <div className="min-h-screen flex flex-col p-6 relative overflow-hidden">
       <StormBackground calmLevel={60} />
       
-      <header className="z-10 flex items-center justify-between mb-12">
+      <header className="z-10 flex items-center justify-between mb-12 max-w-5xl mx-auto w-full">
         <Button
           variant="ghost"
-          size="icon"
           onClick={() => navigate('/')}
-          className="text-white/60 hover:text-white hover:bg-white/10"
+          className="text-white/60 hover:text-white hover:bg-white/10 rounded-full px-4"
         >
-          <Home className="h-6 w-6" />
+          <ChevronLeft className="mr-2 h-5 w-5" /> Back Home
         </Button>
-        <h1 className="text-2xl font-bold text-white tracking-tight">Quick Toolbox</h1>
-        <div className="w-10" />
+        <h1 className="text-3xl font-black text-white tracking-tight">Toolbox</h1>
+        <div className="w-24" />
       </header>
 
       <main className="z-10 flex-1 max-w-5xl mx-auto w-full">
@@ -121,19 +115,19 @@ const Tools = () => {
               key={tool.id}
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: index * 0.1 }}
+              transition={{ delay: index * 0.05 }}
             >
               <Card 
-                className="bg-white/10 backdrop-blur-xl border-white/20 text-white hover:bg-white/15 transition-all cursor-pointer group h-full"
+                className="bg-white/5 backdrop-blur-xl border-white/10 text-white hover:bg-white/10 transition-all cursor-pointer group h-full overflow-hidden"
                 onClick={() => setActiveTool(tool)}
               >
-                <CardContent className="p-6 flex flex-col h-full">
-                  <div className={`w-14 h-14 ${tool.bg} rounded-2xl flex items-center justify-center ${tool.color} group-hover:scale-110 transition-transform shrink-0 mb-4`}>
-                    <tool.icon className="w-7 h-7" />
+                <CardContent className="p-8 flex flex-col h-full">
+                  <div className={`w-16 h-16 ${tool.bg} rounded-2xl flex items-center justify-center ${tool.color} group-hover:scale-110 transition-transform duration-500 mb-6`}>
+                    <tool.icon className="w-8 h-8" />
                   </div>
-                  <div className="space-y-2">
-                    <h3 className="text-xl font-bold">{tool.title}</h3>
-                    <p className="text-white/60 text-sm leading-relaxed">{tool.description}</p>
+                  <div className="space-y-3">
+                    <h3 className="text-2xl font-bold tracking-tight">{tool.title}</h3>
+                    <p className="text-white/40 text-sm leading-relaxed">{tool.description}</p>
                   </div>
                 </CardContent>
               </Card>
@@ -148,38 +142,38 @@ const Tools = () => {
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            className="fixed inset-0 z-50 flex items-center justify-center p-6 bg-slate-950/80 backdrop-blur-md"
+            className="fixed inset-0 z-50 flex items-center justify-center p-6 bg-slate-950/90 backdrop-blur-xl"
           >
             <motion.div
-              initial={{ scale: 0.9, opacity: 0 }}
-              animate={{ scale: 1, opacity: 1 }}
-              exit={{ scale: 0.9, opacity: 0 }}
-              className="w-full max-w-2xl bg-slate-900 border border-white/10 rounded-3xl shadow-2xl overflow-hidden relative"
+              initial={{ scale: 0.9, y: 20, opacity: 0 }}
+              animate={{ scale: 1, y: 0, opacity: 1 }}
+              exit={{ scale: 0.9, y: 20, opacity: 0 }}
+              className="w-full max-w-2xl bg-slate-900/50 border border-white/10 rounded-[40px] shadow-2xl overflow-hidden relative backdrop-blur-3xl"
             >
               <Button
                 variant="ghost"
                 size="icon"
                 onClick={() => setActiveTool(null)}
-                className="absolute top-4 right-4 text-white/40 hover:text-white hover:bg-white/10 z-10"
+                className="absolute top-6 right-6 text-white/40 hover:text-white hover:bg-white/10 z-10 rounded-full"
               >
                 <X className="h-6 w-6" />
               </Button>
 
-              <div className="p-8 md:p-12 flex flex-col items-center space-y-8">
-                <div className="text-center space-y-2">
-                  <h2 className="text-3xl font-bold text-white">{activeTool.title}</h2>
-                  <p className="text-white/60">{activeTool.description}</p>
+              <div className="p-10 md:p-16 flex flex-col items-center space-y-10">
+                <div className="text-center space-y-3">
+                  <h2 className="text-4xl font-black text-white tracking-tight">{activeTool.title}</h2>
+                  <p className="text-white/40 text-lg">{activeTool.description}</p>
                 </div>
 
-                <div className="w-full py-4">
+                <div className="w-full">
                   {activeTool.component || activeTool.content}
                 </div>
 
                 <Button
                   onClick={() => setActiveTool(null)}
-                  className="bg-white text-slate-900 hover:bg-sky-100 px-12 font-bold"
+                  className="bg-white text-slate-950 hover:bg-sky-100 px-16 h-14 rounded-full font-bold text-lg shadow-xl shadow-white/5"
                 >
-                  Done
+                  I feel better
                 </Button>
               </div>
             </motion.div>

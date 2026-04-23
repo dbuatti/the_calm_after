@@ -1,3 +1,5 @@
+"use client";
+
 import React from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 
@@ -7,20 +9,16 @@ interface StormBackgroundProps {
 
 const StormBackground: React.FC<StormBackgroundProps> = ({ calmLevel }) => {
   // Interpolate colors based on calmLevel
-  // 0: slate-950 (dark storm)
-  // 50: slate-600 (overcast)
-  // 100: sky-200 (clear day)
-  
-  const getBgColor = () => {
-    if (calmLevel < 30) return 'bg-slate-950';
-    if (calmLevel < 60) return 'bg-slate-800';
-    if (calmLevel < 90) return 'bg-sky-400';
-    return 'bg-sky-200';
+  const getBgStyles = () => {
+    if (calmLevel < 30) return 'from-slate-950 via-slate-900 to-indigo-950';
+    if (calmLevel < 60) return 'from-slate-800 via-slate-700 to-slate-900';
+    if (calmLevel < 90) return 'from-sky-600 via-sky-400 to-indigo-400';
+    return 'from-sky-300 via-sky-200 to-white';
   };
 
   return (
-    <div className={`fixed inset-0 -z-10 transition-colors duration-1000 ease-in-out ${getBgColor()}`}>
-      {/* Storm Clouds / Rain Effect (Visible when calmLevel is low) */}
+    <div className={`fixed inset-0 -z-10 transition-all duration-1000 ease-in-out bg-gradient-to-br ${getBgStyles()}`}>
+      {/* Storm Clouds / Rain Effect */}
       <AnimatePresence>
         {calmLevel < 60 && (
           <motion.div
@@ -31,10 +29,10 @@ const StormBackground: React.FC<StormBackgroundProps> = ({ calmLevel }) => {
           >
             {/* Rain drops */}
             <div className="absolute inset-0 opacity-20">
-              {[...Array(20)].map((_, i) => (
+              {[...Array(30)].map((_, i) => (
                 <motion.div
                   key={i}
-                  className="absolute w-px h-20 bg-white"
+                  className="absolute w-px h-24 bg-white/40"
                   style={{
                     left: `${Math.random() * 100}%`,
                     top: `-10%`,
@@ -43,7 +41,7 @@ const StormBackground: React.FC<StormBackgroundProps> = ({ calmLevel }) => {
                     top: ['-10%', '110%'],
                   }}
                   transition={{
-                    duration: 0.5 + Math.random() * 0.5,
+                    duration: 0.4 + Math.random() * 0.4,
                     repeat: Infinity,
                     ease: "linear",
                     delay: Math.random() * 2,
@@ -52,24 +50,25 @@ const StormBackground: React.FC<StormBackgroundProps> = ({ calmLevel }) => {
               ))}
             </div>
             
-            {/* Clouds */}
+            {/* Dynamic Clouds */}
             <div className="absolute inset-0">
-              {[...Array(5)].map((_, i) => (
+              {[...Array(6)].map((_, i) => (
                 <motion.div
                   key={i}
-                  className="absolute rounded-full bg-slate-900/40 blur-3xl"
+                  className="absolute rounded-full bg-slate-900/30 blur-[100px]"
                   style={{
-                    width: `${300 + Math.random() * 400}px`,
-                    height: `${200 + Math.random() * 300}px`,
+                    width: `${400 + Math.random() * 600}px`,
+                    height: `${300 + Math.random() * 400}px`,
                     left: `${Math.random() * 100 - 20}%`,
                     top: `${Math.random() * 100 - 20}%`,
                   }}
                   animate={{
-                    x: [0, 50, 0],
-                    y: [0, 30, 0],
+                    x: [0, 100, 0],
+                    y: [0, 50, 0],
+                    scale: [1, 1.1, 1],
                   }}
                   transition={{
-                    duration: 10 + Math.random() * 10,
+                    duration: 15 + Math.random() * 15,
                     repeat: Infinity,
                     ease: "easeInOut",
                   }}
@@ -80,7 +79,7 @@ const StormBackground: React.FC<StormBackgroundProps> = ({ calmLevel }) => {
         )}
       </AnimatePresence>
 
-      {/* Sun / Brightness (Visible when calmLevel is high) */}
+      {/* Sun / Brightness */}
       <AnimatePresence>
         {calmLevel > 40 && (
           <motion.div
@@ -89,14 +88,14 @@ const StormBackground: React.FC<StormBackgroundProps> = ({ calmLevel }) => {
             exit={{ opacity: 0 }}
             className="absolute inset-0 pointer-events-none"
           >
-            <div className="absolute top-20 right-20 w-64 h-64 bg-yellow-200/30 rounded-full blur-3xl" />
-            <div className="absolute bottom-0 left-0 w-full h-1/2 bg-gradient-to-t from-white/20 to-transparent" />
+            <div className="absolute top-[-10%] right-[-10%] w-[600px] h-[600px] bg-yellow-200/20 rounded-full blur-[120px]" />
+            <div className="absolute bottom-0 left-0 w-full h-1/2 bg-gradient-to-t from-white/30 to-transparent" />
           </motion.div>
         )}
       </AnimatePresence>
       
       {/* Subtle Grain Overlay */}
-      <div className="absolute inset-0 opacity-[0.03] pointer-events-none bg-[url('https://grainy-gradients.vercel.app/noise.svg')]" />
+      <div className="absolute inset-0 opacity-[0.05] pointer-events-none mix-blend-overlay bg-[url('https://grainy-gradients.vercel.app/noise.svg')]" />
     </div>
   );
 };
