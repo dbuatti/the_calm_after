@@ -3,7 +3,7 @@
 import React, { useState, useEffect, useMemo } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Wind, Droplets, Eye, X, ListChecks, Compass, Activity, ChevronLeft, Search, SlidersHorizontal, Star, Zap, Footprints, Clock, Brain, Heart, Accessibility, MapPin, Anchor, Sparkles } from 'lucide-react';
+import { Wind, Droplets, Eye, X, ListChecks, Compass, Activity, ChevronLeft, Search, SlidersHorizontal, Star, Zap, Footprints, Clock, Brain, Heart, Accessibility, MapPin, Anchor, Sparkles, Info } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
@@ -35,6 +35,7 @@ const tools = [
     intensity: 'Low',
     duration: '4m',
     description: 'Advanced techniques like Lion\'s Breath and Humming Bee for deep sensory regulation.',
+    science: 'Stimulates the vagus nerve to switch the body from "fight or flight" to "rest and digest" mode.',
     component: <BreathingTechniques />,
   },
   {
@@ -46,6 +47,7 @@ const tools = [
     intensity: 'Medium',
     duration: '2m',
     description: 'Anchor yourself in time and place by answering 7 key re-orienting questions.',
+    science: 'Engages the prefrontal cortex to override the emotional centers of the brain during panic.',
     component: <CognitiveReorientation />,
   },
   {
@@ -57,6 +59,7 @@ const tools = [
     intensity: 'Low',
     duration: '3m',
     description: 'Use physical objects like cool cloths or special items to ground your senses.',
+    science: 'Tactile stimulation provides a concrete "anchor" that pulls focus away from internal distress.',
     component: <SensoryAnchors />,
   },
   {
@@ -68,6 +71,7 @@ const tools = [
     intensity: 'Medium',
     duration: '3m',
     description: 'Cognitive distractions using categories, math, and reverse spelling.',
+    science: 'Forces the brain to use logical processing power, leaving less room for emotional rumination.',
     component: <MentalGym />,
   },
   {
@@ -79,6 +83,7 @@ const tools = [
     intensity: 'Low',
     duration: '5m',
     description: 'Self-kindness affirmations and visualization of loved ones.',
+    science: 'Activates the care-seeking system, releasing oxytocin to counteract the effects of cortisol.',
     component: <SoothingSanctuary />,
   },
   {
@@ -90,6 +95,7 @@ const tools = [
     intensity: 'Medium',
     duration: '4m',
     description: 'Physical grounding through stomping, clenching, and stretching.',
+    science: 'Proprioceptive input (knowing where your body is in space) is a powerful signal of safety to the brain.',
     component: <BodyScanActive />,
   },
   {
@@ -101,6 +107,7 @@ const tools = [
     intensity: 'Low',
     duration: '10m',
     description: 'Connect directly with the Earth to reduce inflammation and stress.',
+    science: 'Direct contact with the Earth allows for an exchange of electrons that can help regulate circadian rhythms.',
     component: <EarthingGuide />,
   },
   {
@@ -112,6 +119,7 @@ const tools = [
     intensity: 'Low',
     duration: '3m',
     description: 'Focus on the sensory details of air moving through your body.',
+    science: 'Diaphragmatic breathing lowers blood pressure and reduces the production of stress hormones.',
     component: <BalloonBreathing />,
   },
   {
@@ -123,6 +131,7 @@ const tools = [
     intensity: 'Medium',
     duration: '5m',
     description: 'A comprehensive self-awareness scan for pain, tension, and safety.',
+    science: 'Interoception (awareness of internal states) helps identify physical needs that may be masquerading as anxiety.',
     component: <SelfAwarenessPITCHES />,
   },
   {
@@ -134,6 +143,7 @@ const tools = [
     intensity: 'Medium',
     duration: '2m',
     description: 'Engage your logical mind by narrating actions or stating problems.',
+    science: 'Verbalizing actions moves the brain from "experiencing" a crisis to "observing" a sequence of events.',
     component: <NarrationTool />,
   },
   {
@@ -145,6 +155,7 @@ const tools = [
     intensity: 'Low',
     duration: '3m',
     description: 'Describe your environment in detail to anchor yourself in the present.',
+    science: 'Externalizing focus breaks the loop of internal panic by forcing the brain to process new visual data.',
     component: <OpenAwareness />,
   },
   {
@@ -156,6 +167,7 @@ const tools = [
     intensity: 'High',
     duration: '1m',
     description: 'Use cold water to activate your nervous system\'s "calm" switch.',
+    science: 'Triggers the Mammalian Dive Reflex, which immediately slows the heart rate and redirects blood to the brain.',
     component: <ColdWaterExercise />,
   },
   {
@@ -167,6 +179,7 @@ const tools = [
     intensity: 'Medium',
     duration: '5m',
     description: 'Engage all your senses to return to the present moment.',
+    science: 'Systematically engages all five senses to ground the individual in their immediate physical reality.',
     component: <SensoryGrounding />,
   },
 ];
@@ -424,6 +437,18 @@ const Tools = () => {
                 <div className="w-full">
                   {activeTool.component}
                 </div>
+
+                {activeTool.science && (
+                  <div className="w-full bg-white/5 border border-white/10 rounded-3xl p-6 flex items-start space-x-4">
+                    <div className="w-10 h-10 bg-sky-500/10 rounded-xl flex items-center justify-center text-sky-400 shrink-0">
+                      <Info className="w-5 h-5" />
+                    </div>
+                    <div className="space-y-1">
+                      <h4 className="text-[10px] font-black uppercase tracking-widest text-white/40">Why it works</h4>
+                      <p className="text-xs text-white/60 leading-relaxed italic">{activeTool.science}</p>
+                    </div>
+                  </div>
+                )}
 
                 <div className="flex flex-col items-center space-y-4">
                   <Button

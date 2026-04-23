@@ -3,7 +3,7 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
-import { ChevronRight, ChevronLeft, Home, CheckCircle2, Clock, RotateCcw } from 'lucide-react';
+import { ChevronRight, ChevronLeft, Home, CheckCircle2, Clock, RotateCcw, FastForward } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Progress } from '@/components/ui/progress';
 import StormBackground from '@/components/grounding/StormBackground';
@@ -27,6 +27,7 @@ const steps = [
     description: 'Let\'s activate the Mammalian Dive Reflex. This cools both body and mind, returning you to a calm state. Use a bowl of cold water or ice.',
     calmLevel: 30,
     estimate: '2 mins',
+    skippable: true,
     component: () => <ColdWaterExercise />,
   },
   {
@@ -199,6 +200,17 @@ const Session = () => {
                   )}
                 </Button>
               </div>
+
+              {step.skippable && (
+                <Button 
+                  variant="ghost" 
+                  onClick={nextStep}
+                  className="text-white/20 hover:text-white/40 text-[10px] font-bold uppercase tracking-widest"
+                >
+                  <FastForward className="w-4 h-4 mr-2" /> Skip this step
+                </Button>
+              )}
+
               <div className="flex items-center space-x-4 text-white/20 text-[10px] font-bold uppercase tracking-[0.3em]">
                 <span>Space to Continue</span>
                 <span className="w-1 h-1 bg-white/10 rounded-full" />
