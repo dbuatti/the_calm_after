@@ -15,7 +15,7 @@ const AudioToggle: React.FC<AudioToggleProps> = ({ calmLevel }) => {
   const [isPlaying, setIsPlaying] = useState(false);
   const [showPanel, setShowPanel] = useState(false);
   const [masterVolume, setMasterVolume] = useState(30);
-  const [activeSound, setActiveSound] = useState<'ambient' | 'waves' | 'forest' | 'healing'>('ambient');
+  const [activeSound, setActiveSound] = useState<'ambient' | 'waves' | 'forest' | 'healing'>('healing');
   
   const stormAudioRef = useRef<HTMLAudioElement | null>(null);
   const calmAudioRef = useRef<HTMLAudioElement | null>(null);
@@ -135,19 +135,19 @@ const AudioToggle: React.FC<AudioToggleProps> = ({ calmLevel }) => {
               <div className="grid grid-cols-2 gap-2">
                 <Button
                   variant="ghost"
-                  onClick={() => setActiveSound('ambient')}
-                  className={`flex flex-col items-center h-20 rounded-2xl space-y-2 transition-all ${activeSound === 'ambient' ? 'bg-white/10 text-sky-400' : 'bg-white/5 text-white/20'}`}
-                >
-                  <Wind className="w-5 h-5" />
-                  <span className="text-[8px] font-bold uppercase tracking-tighter">Storm</span>
-                </Button>
-                <Button
-                  variant="ghost"
                   onClick={() => setActiveSound('healing')}
                   className={`flex flex-col items-center h-20 rounded-2xl space-y-2 transition-all ${activeSound === 'healing' ? 'bg-white/10 text-amber-400' : 'bg-white/5 text-white/20'}`}
                 >
                   <Sparkles className="w-5 h-5" />
                   <span className="text-[8px] font-bold uppercase tracking-tighter">Healing</span>
+                </Button>
+                <Button
+                  variant="ghost"
+                  onClick={() => setActiveSound('ambient')}
+                  className={`flex flex-col items-center h-20 rounded-2xl space-y-2 transition-all ${activeSound === 'ambient' ? 'bg-white/10 text-sky-400' : 'bg-white/5 text-white/20'}`}
+                >
+                  <Wind className="w-5 h-5" />
+                  <span className="text-[8px] font-bold uppercase tracking-tighter">Storm</span>
                 </Button>
                 <Button
                   variant="ghost"
