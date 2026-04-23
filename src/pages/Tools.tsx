@@ -3,7 +3,7 @@
 import React, { useState, useEffect, useMemo } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Wind, Droplets, Eye, X, ListChecks, Compass, Activity, ChevronLeft, Search, SlidersHorizontal, Star, Zap, Footprints, Clock, Brain, Heart, Accessibility, MapPin, Anchor, Sparkles, Info } from 'lucide-react';
+import { Wind, Droplets, Eye, X, ListChecks, Compass, Activity, ChevronLeft, Search, SlidersHorizontal, Star, Zap, Footprints, Clock, Brain, Heart, Accessibility, MapPin, Anchor, Sparkles, Info, Move } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
@@ -23,8 +23,34 @@ import BodyScanActive from '@/components/grounding/BodyScanActive';
 import CognitiveReorientation from '@/components/grounding/CognitiveReorientation';
 import SensoryAnchors from '@/components/grounding/SensoryAnchors';
 import BreathingTechniques from '@/components/grounding/BreathingTechniques';
+import MindfulMovement from '@/components/grounding/MindfulMovement';
+import SqueezeHug from '@/components/grounding/SqueezeHug';
 
 const tools = [
+  {
+    id: 'squeeze-hug',
+    title: 'Squeeze Hug',
+    icon: Heart,
+    color: 'text-rose-400',
+    bg: 'bg-rose-500/10',
+    intensity: 'Low',
+    duration: '2m',
+    description: 'A self-soothing technique involving a firm hug to provide immediate comfort.',
+    science: 'Provides proprioceptive input that signals safety to the nervous system, helping with dissociation.',
+    component: <SqueezeHug />,
+  },
+  {
+    id: 'mindful-move',
+    title: 'Mindful Movement',
+    icon: Move,
+    color: 'text-sky-400',
+    bg: 'bg-sky-500/10',
+    intensity: 'Low',
+    duration: '3m',
+    description: 'Synchronize your breath with slow, deliberate arm movements.',
+    science: 'Combines physical action with breath control to pull focus back from distressing thoughts.',
+    component: <MindfulMovement />,
+  },
   {
     id: 'breathing-tech',
     title: 'Sensory Breathing',
