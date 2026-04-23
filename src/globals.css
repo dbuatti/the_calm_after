@@ -8,7 +8,7 @@
     --background: 222 47% 2%;
     --foreground: 210 40% 98%;
 
-    /* Atmospheric States - Refined Spectrum */
+    /* Atmospheric States */
     --storm-deep: 222 47% 2%;
     --storm-mid: 217 33% 8%;
     --storm-lume: 199 89% 48%;
@@ -17,12 +17,12 @@
     --calm-mid: 38 92% 50%;
     --calm-lume: 45 93% 91%;
 
-    /* UI Surfaces */
+    /* UI Surfaces - Softer Radius */
     --card: 222 47% 4%;
     --card-foreground: 210 40% 98%;
     --border: 217.2 32.6% 12%;
     
-    --radius: 3rem;
+    --radius: 3.5rem;
   }
 }
 
@@ -33,9 +33,10 @@
 
   body {
     @apply bg-background text-foreground antialiased selection:bg-sky-500/30;
+    font-feature-settings: "ss01", "ss02", "cv01", "cv11";
   }
 
-  /* Global Noise Texture Overlay - Fixed with Data URI */
+  /* Global Noise Texture Overlay */
   body::after {
     content: "";
     position: fixed;
@@ -50,22 +51,15 @@
   }
 }
 
-/* Advanced Glassmorphism */
+/* Spongey UI Utilities */
 .glass-surface {
   @apply bg-white/[0.01] backdrop-blur-3xl border border-white/5 shadow-[inset_0_1px_1px_rgba(255,255,255,0.05)];
   position: relative;
 }
 
-.glass-surface::before {
-  content: '';
-  position: absolute;
-  inset: 0;
-  border-radius: inherit;
-  padding: 1px;
-  background: linear-gradient(135deg, rgba(255,255,255,0.1) 0%, transparent 50%, rgba(255,255,255,0.02) 100%);
-  mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
-  mask-composite: exclude;
-  pointer-events: none;
+.spongey-shadow {
+  box-shadow: 0 20px 50px -12px rgba(0, 0, 0, 0.5),
+              0 0 0 1px rgba(255, 255, 255, 0.05);
 }
 
 .text-lume {
@@ -73,14 +67,6 @@
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   filter: drop-shadow(0 0 20px rgba(255,255,255,0.1));
-}
-
-.storm-pulse {
-  box-shadow: 0 0 50px -10px hsla(199, 89%, 48%, 0.15);
-}
-
-.calm-pulse {
-  box-shadow: 0 0 50px -10px hsla(38, 92%, 50%, 0.15);
 }
 
 /* Custom Scrollbar */
@@ -103,4 +89,14 @@
 .no-scrollbar {
   -ms-overflow-style: none;
   scrollbar-width: none;
+}
+
+/* Bouncy Animations */
+@keyframes float {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-10px); }
+}
+
+.animate-float {
+  animation: float 6s ease-in-out infinite;
 }
