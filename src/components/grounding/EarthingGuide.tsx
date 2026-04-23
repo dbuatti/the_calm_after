@@ -2,15 +2,15 @@
 
 import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Footprints, Activity, Zap, Moon, Heart, Timer, Info } from 'lucide-react';
+import { Footprints, Activity, Zap, Moon, Heart, Timer, Info, Droplets, ShieldCheck } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Progress } from '@/components/ui/progress';
 
 const benefits = [
-  { icon: Activity, title: "Blood Flow", desc: "Reduces blood viscosity (thickness), helping red blood cells flow more freely for better circulation." },
-  { icon: Zap, title: "Antioxidants", desc: "The Earth's negative charge provides electrons that act as natural antioxidants to neutralize free radicals." },
-  { icon: Heart, title: "Cortisol", desc: "Helps regulate stress hormones, reducing inflammation and taking the load off your internal systems." },
-  { icon: Moon, title: "Sleep & Pain", desc: "Preliminary research suggests improved sleep quality and faster wound healing through regular practice." },
+  { icon: Droplets, title: "Blood Viscosity", desc: "Reduces blood thickness, allowing red blood cells to flow freely and improving overall circulation." },
+  { icon: Zap, title: "Electron Exchange", desc: "The Earth's negative charge provides electrons that act as natural antioxidants to neutralize free radicals." },
+  { icon: Activity, title: "Cortisol Regulation", desc: "Helps normalize stress hormone levels, reducing systemic inflammation and improving sleep quality." },
+  { icon: ShieldCheck, title: "Wound Healing", desc: "Research indicates that 1 hour of daily grounding can significantly accelerate the healing of chronic wounds." },
 ];
 
 const EarthingGuide = () => {
@@ -51,7 +51,7 @@ const EarthingGuide = () => {
             <div className="space-y-2">
               <h3 className="text-2xl font-bold text-white">Physical Earthing</h3>
               <p className="text-white/40 text-sm leading-relaxed">
-                Find a patch of grass, soil, sand, or unsealed concrete. Take off your shoes and let your bare feet touch the earth.
+                Find a patch of grass, soil, or sand. Take off your shoes and let your bare feet touch the earth to begin the electron exchange.
               </p>
             </div>
 
@@ -76,7 +76,7 @@ const EarthingGuide = () => {
             onClick={() => setShowScience(true)}
             className="w-full text-sky-400/60 hover:text-sky-400 text-[10px] font-bold uppercase tracking-widest"
           >
-            <Info className="w-4 h-4 mr-2" /> Why does this work?
+            <Info className="w-4 h-4 mr-2" /> The Science of Earthing
           </Button>
         </motion.div>
       ) : (

@@ -3,7 +3,7 @@
 import React, { useState, useEffect, useMemo } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Wind, Droplets, Eye, X, ListChecks, Compass, Activity, ChevronLeft, Search, SlidersHorizontal, Star, Zap, Footprints, Clock } from 'lucide-react';
+import { Wind, Droplets, Eye, X, ListChecks, Compass, Activity, ChevronLeft, Search, SlidersHorizontal, Star, Zap, Footprints, Clock, Brain, Heart, Accessibility } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
@@ -18,8 +18,44 @@ import SelfAwarenessPITCHES from '@/components/grounding/SelfAwarenessPITCHES';
 import SensoryGrounding from '@/components/grounding/SensoryGrounding';
 import EarthingGuide from '@/components/grounding/EarthingGuide';
 import AudioToggle from '@/components/grounding/AudioToggle';
+import MentalGym from '@/components/grounding/MentalGym';
+import SoothingSanctuary from '@/components/grounding/SoothingSanctuary';
+import BodyScanActive from '@/components/grounding/BodyScanActive';
 
 const tools = [
+  {
+    id: 'mental-gym',
+    title: 'Mental Gym',
+    icon: Brain,
+    color: 'text-amber-400',
+    bg: 'bg-amber-500/10',
+    intensity: 'Medium',
+    duration: '3m',
+    description: 'Cognitive distractions using categories, math, and reverse spelling.',
+    component: <MentalGym />,
+  },
+  {
+    id: 'soothing',
+    title: 'Soothing Sanctuary',
+    icon: Heart,
+    color: 'text-rose-400',
+    bg: 'bg-rose-500/10',
+    intensity: 'Low',
+    duration: '5m',
+    description: 'Self-kindness affirmations and visualization of loved ones.',
+    component: <SoothingSanctuary />,
+  },
+  {
+    id: 'active-scan',
+    title: 'Active Body Scan',
+    icon: Accessibility,
+    color: 'text-emerald-400',
+    bg: 'bg-emerald-500/10',
+    intensity: 'Medium',
+    duration: '4m',
+    description: 'Physical grounding through stomping, clenching, and stretching.',
+    component: <BodyScanActive />,
+  },
   {
     id: 'earthing',
     title: 'Physical Earthing',
