@@ -3,7 +3,7 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
-import { ChevronRight, ChevronLeft, Home, CheckCircle2, X } from 'lucide-react';
+import { ChevronRight, ChevronLeft, Home, CheckCircle2, Clock } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Progress } from '@/components/ui/progress';
 import StormBackground from '@/components/grounding/StormBackground';
@@ -19,21 +19,24 @@ const steps = [
     title: 'The Storm',
     description: 'Life can feel overwhelming, making you feel disconnected. But there is a way to bring yourself back. Acknowledge the feelings; they are like a storm passing through.',
     calmLevel: 10,
+    estimate: '1 min',
   },
   {
     id: 'dive-reflex',
     title: 'Physiology Change',
     description: 'Let\'s activate the Mammalian Dive Reflex. This cools both body and mind, returning you to a calm state. Use a bowl of cold water or ice.',
     calmLevel: 30,
+    estimate: '2 mins',
     component: () => <ColdWaterExercise />,
   },
   {
     id: 'breath-1',
     title: 'First Breath',
-    description: 'As you bring your face back up, take a deep breath in together. Inhale deeply, hold, and release slowly.',
+    description: 'As you bring your face back up, take a deep breath in together. Choose a rhythm that feels right for you.',
     calmLevel: 50,
+    estimate: '3 mins',
     component: (isActive: boolean) => (
-      <BreathingGuide inhaleTime={4} holdTime={3} exhaleTime={4} isActive={isActive} />
+      <BreathingGuide isActive={isActive} />
     ),
   },
   {
@@ -41,12 +44,14 @@ const steps = [
     title: 'Connect with Reality',
     description: 'Stand in the room. Feel the ground beneath your feet. Gently guide your awareness back to your reality.',
     calmLevel: 70,
+    estimate: '1 min',
   },
   {
     id: 'sensory',
     title: '5-4-3-2-1 Technique',
     description: 'Engage all your senses to return to the present moment. Follow the prompts below.',
     calmLevel: 90,
+    estimate: '4 mins',
     component: () => <SensoryGrounding />,
   },
   {
@@ -54,6 +59,7 @@ const steps = [
     title: 'The Calm',
     description: 'How does your body feel now? You have the power to center yourself, even when life feels overwhelming. Stay in this space.',
     calmLevel: 100,
+    estimate: '1 min',
   },
 ];
 
@@ -111,7 +117,7 @@ const Session = () => {
           <Progress value={progress} className="h-1 bg-white/5" />
           <div className="flex justify-between text-[10px] font-bold uppercase tracking-[0.2em] text-white/20">
             <span>Beginning</span>
-            <span>{Math.round(progress)}% Complete</span>
+            <span className="flex items-center"><Clock className="w-3 h-3 mr-1" /> Est. {step.estimate}</span>
             <span>Clarity</span>
           </div>
         </div>
