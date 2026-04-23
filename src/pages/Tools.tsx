@@ -3,7 +3,7 @@
 import React, { useState, useEffect, useMemo } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Wind, Droplets, Eye, X, ListChecks, Compass, Activity, ChevronLeft, Search, SlidersHorizontal, Star, Zap } from 'lucide-react';
+import { Wind, Droplets, Eye, X, ListChecks, Compass, Activity, ChevronLeft, Search, SlidersHorizontal, Star, Zap, Footprints } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
@@ -16,9 +16,20 @@ import NarrationTool from '@/components/grounding/NarrationTool';
 import OpenAwareness from '@/components/grounding/OpenAwareness';
 import SelfAwarenessPITCHES from '@/components/grounding/SelfAwarenessPITCHES';
 import SensoryGrounding from '@/components/grounding/SensoryGrounding';
+import EarthingGuide from '@/components/grounding/EarthingGuide';
 import AudioToggle from '@/components/grounding/AudioToggle';
 
 const tools = [
+  {
+    id: 'earthing',
+    title: 'Physical Earthing',
+    icon: Footprints,
+    color: 'text-emerald-400',
+    bg: 'bg-emerald-500/10',
+    intensity: 'Low',
+    description: 'Connect directly with the Earth to reduce inflammation and stress.',
+    component: <EarthingGuide />,
+  },
   {
     id: 'balloon',
     title: 'Balloon Breathing',

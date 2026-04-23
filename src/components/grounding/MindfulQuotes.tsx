@@ -5,12 +5,14 @@ import { motion, AnimatePresence } from 'framer-motion';
 
 const quotes = [
   "The present moment is the only time over which we have dominion.",
+  "Grounding helps reduce blood viscosity, improving your circulation.",
   "Feelings are just visitors, let them come and go.",
+  "Direct contact with the Earth helps regulate your cortisol levels.",
   "You are the sky. Everything else is just the weather.",
   "Breathe. You are exactly where you need to be.",
+  "Electrons from the Earth act as natural antioxidants for your body.",
   "Peace is a practice, not a destination.",
-  "Your calm is your superpower.",
-  "In the middle of a storm, find your anchor.",
+  "10 to 30 minutes of earthing can help reset your internal system.",
 ];
 
 const MindfulQuotes = () => {
