@@ -24,22 +24,23 @@ const StormBackground: React.FC<StormBackgroundProps> = ({ calmLevel }) => {
   // Dynamic color mapping based on calmLevel
   const getColors = () => {
     if (calmLevel < 30) return {
-      bg: 'bg-[#020617]',
-      blob1: 'bg-indigo-900/20',
+      bg: 'bg-[#020617]', // Deepest Storm
+      blob1: 'bg-indigo-900/30',
       blob2: 'bg-blue-900/20',
-      blob3: 'bg-slate-900/30'
+      blob3: 'bg-slate-900/40'
     };
     if (calmLevel < 70) return {
-      bg: 'bg-[#0f172a]',
-      blob1: 'bg-sky-900/20',
+      bg: 'bg-[#0f172a]', // Mid Storm
+      blob1: 'bg-sky-900/30',
       blob2: 'bg-indigo-800/20',
-      blob3: 'bg-violet-900/20'
+      blob3: 'bg-violet-900/30'
     };
+    // Clear State - Luminous but readable
     return {
-      bg: 'bg-[#bae6fd]',
-      blob1: 'bg-amber-200/30',
-      blob2: 'bg-rose-200/20',
-      blob3: 'bg-sky-100/40'
+      bg: 'bg-[#075985]', // Sky-800: Deep enough for white text, bright enough to feel "Clear"
+      blob1: 'bg-sky-400/30',
+      blob2: 'bg-amber-200/20',
+      blob3: 'bg-indigo-400/20'
     };
   };
 
@@ -54,33 +55,36 @@ const StormBackground: React.FC<StormBackgroundProps> = ({ calmLevel }) => {
         transition={{ type: "spring", damping: 50, stiffness: 50 }}
       >
         <motion.div 
-          className={`absolute top-[-10%] left-[-10%] w-[70%] h-[70%] rounded-full blur-[120px] transition-colors duration-[3000ms] ${colors.blob1}`}
+          className={`absolute top-[-20%] left-[-10%] w-[80%] h-[80%] rounded-full blur-[140px] transition-colors duration-[3000ms] ${colors.blob1}`}
           animate={{ 
-            x: [0, 50, 0], 
-            y: [0, 30, 0],
-            scale: [1, 1.1, 1]
+            x: [0, 60, 0], 
+            y: [0, 40, 0],
+            scale: [1, 1.15, 1]
           }}
-          transition={{ duration: 15, repeat: Infinity, ease: "easeInOut" }}
+          transition={{ duration: 20, repeat: Infinity, ease: "easeInOut" }}
         />
         <motion.div 
-          className={`absolute bottom-[-10%] right-[-10%] w-[60%] h-[60%] rounded-full blur-[120px] transition-colors duration-[3000ms] ${colors.blob2}`}
+          className={`absolute bottom-[-20%] right-[-10%] w-[70%] h-[70%] rounded-full blur-[140px] transition-colors duration-[3000ms] ${colors.blob2}`}
           animate={{ 
-            x: [0, -40, 0], 
-            y: [0, -60, 0],
-            scale: [1, 1.2, 1]
+            x: [0, -50, 0], 
+            y: [0, -70, 0],
+            scale: [1, 1.25, 1]
           }}
-          transition={{ duration: 18, repeat: Infinity, ease: "easeInOut", delay: 1 }}
+          transition={{ duration: 22, repeat: Infinity, ease: "easeInOut", delay: 1 }}
         />
         <motion.div 
-          className={`absolute top-[20%] right-[10%] w-[50%] h-[50%] rounded-full blur-[120px] transition-colors duration-[3000ms] ${colors.blob3}`}
+          className={`absolute top-[15%] right-[5%] w-[60%] h-[60%] rounded-full blur-[140px] transition-colors duration-[3000ms] ${colors.blob3}`}
           animate={{ 
-            x: [0, 30, 0], 
-            y: [0, 50, 0],
-            scale: [1, 0.9, 1]
+            x: [0, 40, 0], 
+            y: [0, 60, 0],
+            scale: [1, 0.95, 1]
           }}
-          transition={{ duration: 20, repeat: Infinity, ease: "easeInOut", delay: 2 }}
+          transition={{ duration: 25, repeat: Infinity, ease: "easeInOut", delay: 2 }}
         />
       </motion.div>
+
+      {/* Atmospheric Depth Layer */}
+      <div className="absolute inset-0 bg-gradient-to-b from-black/20 via-transparent to-black/40 pointer-events-none" />
 
       {/* Rain/Mist Overlay for Stormy states */}
       <AnimatePresence>
@@ -92,7 +96,7 @@ const StormBackground: React.FC<StormBackgroundProps> = ({ calmLevel }) => {
             className="absolute inset-0 pointer-events-none"
           >
             <div className="absolute inset-0 bg-gradient-to-b from-transparent via-slate-950/20 to-slate-950/40" />
-            <div className="absolute inset-0 opacity-[0.05] bg-[url('https://grainy-gradients.vercel.app/noise.svg')]" />
+            <div className="absolute inset-0 opacity-[0.08] bg-[url('https://grainy-gradients.vercel.app/noise.svg')]" />
           </motion.div>
         )}
       </AnimatePresence>
@@ -106,7 +110,8 @@ const StormBackground: React.FC<StormBackgroundProps> = ({ calmLevel }) => {
             exit={{ opacity: 0 }}
             className="absolute inset-0 pointer-events-none"
           >
-            <div className="absolute inset-0 bg-gradient-to-tr from-amber-500/5 via-transparent to-rose-500/5" />
+            <div className="absolute inset-0 bg-gradient-to-tr from-amber-500/10 via-transparent to-rose-500/10" />
+            <div className="absolute inset-0 opacity-[0.03] bg-[url('https://grainy-gradients.vercel.app/noise.svg')]" />
           </motion.div>
         )}
       </AnimatePresence>
