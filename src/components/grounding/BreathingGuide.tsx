@@ -1,3 +1,5 @@
+"use client";
+
 import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 
@@ -49,9 +51,9 @@ const BreathingGuide: React.FC<BreathingGuideProps> = ({
   }, [isActive, phase, inhaleTime, holdTime, exhaleTime]);
 
   const getScale = () => {
-    if (phase === 'inhale') return 1 + (timer / inhaleTime) * 0.5;
-    if (phase === 'hold') return 1.5;
-    if (phase === 'exhale') return 1.5 - (timer / exhaleTime) * 0.5;
+    if (phase === 'inhale') return 1 + (timer / inhaleTime) * 0.6;
+    if (phase === 'hold') return 1.6;
+    if (phase === 'exhale') return 1.6 - (timer / exhaleTime) * 0.6;
     return 1;
   };
 
@@ -62,53 +64,74 @@ const BreathingGuide: React.FC<BreathingGuideProps> = ({
     return '';
   };
 
+  const getProgress = () => {
+    const total = phase === 'inhale' ? inhaleTime : phase === 'hold' ? holdTime : exhaleTime;
+    return (timer / total) * 100;
+  };
+
   return (
-    <div className="flex flex-col items-center justify-center space-y-8">
-      <div className="relative w-64 h-64 flex items-center justify-center">
-        {/* Outer Ring */}
+    <div className="flex flex-col items-center justify-center space-y-12 py-8">
+      <div className="relative w-72 h-72 flex items-center justify-center">
+        {/* Outer Glow Layers */}
         <motion.div
-          className="absolute inset-0 border-4 border-white/20 rounded-full"
-          animate={{ scale: [1, 1.05, 1] }}
+          className="absolute inset-0 bg-white/5 rounded-full blur-3xl"
+          animate={{ scale: [1, 1.2, 1], opacity: [0.1, 0.2, 0.1] }}
           transition={{ duration: 4, repeat: Infinity, ease: "easeInOut" }}
         />
         
         {/* Breathing Circle */}
         <motion.div
-          className="w-40 h-40 bg-white/30 backdrop-blur-md rounded-full flex items-center justify-center shadow-xl"
+          className="w-44 h-44 bg-white/10 backdrop-blur-2xl rounded-full flex items-center justify-center shadow-[0_0_50px_rgba(255,255,255,0.1)] border border-white/20 z-10"
           animate={{ scale: getScale() }}
           transition={{ duration: 0.1, ease: "linear" }}
         >
           <AnimatePresence mode="wait">
-            <motion.span
+            <motion.div
               key={phase}
-              initial={{ opacity: 0, y: 10 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: -10 }}
-              className="text-white font-medium text-xl uppercase tracking-widest"
+              initial={{ opacity: 0, scale: 0.9 }}
+              animate={{ opacity: 1, scale: 1 }}
+              exit={{ opacity: 0, scale: 1.1 }}
+              className="flex flex-col items-center"
             >
-              {getLabel()}
-            </motion.span>
+              <span className="text-white font-black text-2xl uppercase tracking-[0.2em]">
+                {getLabel()}
+              </span>
+            </motion.div>
           </AnimatePresence>
         </motion.div>
         
-        {/* Progress Ring (SVG) */}
-        <svg className="absolute inset-0 w-full h-full -rotate-90">
+        {/* Progress Ring */}
+        <svg className="absolute inset-0 w-full h-full -rotate-90 drop-shadow-[0_0_8px_rgba(255,255,255,0.3)]">
           <circle
-            cx="128"
-            cy="128"
-            r="120"
+            cx="144"
+            cy="144"
+            r="130"
             fill="none"
             stroke="white"
-            strokeWidth="2"
-            strokeDasharray="754"
-            strokeDashoffset={754 - (754 * (timer / (phase === 'inhale' ? inhaleTime : phase === 'hold' ? holdTime : exhaleTime)))}
-            className="transition-all duration-100 ease-linear opacity-50"
+            strokeWidth="1.5"
+            strokeDasharray="816"
+            strokeDashoffset={816 - (816 * getProgress()) / 100}
+            className="transition-all duration-100 ease-linear opacity-40"
+          />
+          <circle
+            cx="144"
+            cy="144"
+            r="130"
+            fill="none"
+            stroke="white"
+            strokeWidth="1"
+            className="opacity-10"
           />
         </svg>
       </div>
       
-      <div className="text-white/80 text-sm font-light tracking-wide">
-        {Math.ceil((phase === 'inhale' ? inhaleTime : phase === 'hold' ? holdTime : exhaleTime) - timer)} seconds remaining
+      <div className="flex flex-col items-center space-y-2">
+        <div className="text-white/40 text-xs font-bold uppercase tracking-widest">
+          Time Remaining
+        </div>
+        <div className="text-white text-3xl font-light tabular-nums">
+          {Math.ceil((phase === 'inhale' ? inhaleTime : phase === 'hold' ? holdTime : exhaleTime) - timer)}s
+        </div>
       </div>
     </div>
   );
