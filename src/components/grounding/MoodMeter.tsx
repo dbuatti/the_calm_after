@@ -137,7 +137,15 @@ const MoodMeter: React.FC<MoodMeterProps> = ({ onSuggest }) => {
                                 <span>{s.high}</span>
                               </div>
                             </div>
-                            <div className={`relative h-10 rounded-2xl bg-gradient-to-r ${s.color} p-0.5`}>
+                            {/* 
+                                We stop propagation on pointer down to prevent the parent 
+                                motion.div from starting a drag gesture when the user 
+                                is trying to move the slider thumb.
+                            */}
+                            <div 
+                              className={`relative h-10 rounded-2xl bg-gradient-to-r ${s.color} p-0.5`}
+                              onPointerDown={(e) => e.stopPropagation()}
+                            >
                               <Slider
                                 value={[sliderValues[s.id]]}
                                 onValueChange={(v) => setSliderValues(prev => ({ ...prev, [s.id]: v[0] }))}
