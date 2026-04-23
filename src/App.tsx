@@ -7,6 +7,7 @@ import Index from "./pages/Index";
 import Session from "./pages/Session";
 import Tools from "./pages/Tools";
 import NotFound from "./pages/NotFound";
+import BreathingShortcut from "./components/grounding/BreathingShortcut";
 
 const queryClient = new QueryClient();
 
@@ -15,6 +16,7 @@ const App = () => (
     <TooltipProvider>
       <Toaster />
       <Sonner />
+      <BreathingShortcut />
       <BrowserRouter>
         <Routes>
           <Route path="/" element={<Index />} />

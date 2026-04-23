@@ -91,6 +91,17 @@ const Index = () => {
             >
               Start Guided Journey
             </Button>
+            <Button 
+              onClick={() => {
+                // Trigger the global breathing modal by dispatching a custom event or using a shared state
+                // For now, we'll just navigate to tools or we can use a simple window event
+                window.dispatchEvent(new KeyboardEvent('keydown', { key: 'b' }));
+              }} 
+              variant="outline"
+              className="bg-white/5 border-white/10 text-white hover:bg-white/10 rounded-full px-10 md:px-12 h-14 md:h-16 font-bold uppercase tracking-widest text-[10px] md:text-xs transition-all"
+            >
+              <Wind className="mr-2 h-4 w-4" /> Quick Breathe
+            </Button>
             <div className="relative">
               <motion.div 
                 className="absolute inset-0 bg-rose-500/20 rounded-full blur-xl"
