@@ -45,6 +45,11 @@ const BreathingGuide: React.FC<BreathingGuideProps> = ({ isActive }) => {
                            (pattern.holdEmpty || 0);
 
         if (next >= currentLimit) {
+          // Haptic feedback on phase change
+          if (typeof navigator !== 'undefined' && navigator.vibrate) {
+            navigator.vibrate(50);
+          }
+
           if (phase === 'inhale') setPhase('hold');
           else if (phase === 'hold') setPhase('exhale');
           else if (phase === 'exhale') {

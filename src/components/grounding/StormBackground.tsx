@@ -7,8 +7,15 @@ interface StormBackgroundProps {
   calmLevel: number; // 0 (Stormy) to 100 (Clear)
 }
 
+interface Ripple {
+  id: number;
+  x: number;
+  y: number;
+}
+
 const StormBackground: React.FC<StormBackgroundProps> = ({ calmLevel }) => {
   const [mousePos, setMousePos] = useState({ x: 0, y: 0 });
+  const [ripples, setRipples] = useState<Ripple[]>([]);
 
   useEffect(() => {
     const handleMouseMove = (e: MouseEvent) => {
@@ -17,8 +24,22 @@ const StormBackground: React.FC<StormBackgroundProps> = ({ calmLevel }) => {
         y: (e.clientY / window.innerHeight - 0.5) * 20,
       });
     };
+
+    const handleClick = (e: MouseEvent) => {
+      const newRipple = {
+        id: Date.now(),
+        x: e.clientX,
+        y: e.clientY,
+      };
+      setRipples(prev => [...prev.slice(-5), newRipple]);
+    };
+
     window.addEventListener('mousemove', handleMouseMove);
-    return () => window.removeEventListener('mousemove', handleMouseMove);
+    window.addEventListener('mousedown', handleClick);
+    return () => {
+      window.removeEventListener('mousemove', handleMouseMove);
+      window.removeEventListener('mousedown', handleClick);
+    };
   }, []);
 
   const getBgStyles = () => {
@@ -36,6 +57,22 @@ const StormBackground: React.FC<StormBackgroundProps> = ({ calmLevel }) => {
         animate={{ x: mousePos.x, y: mousePos.y }}
         transition={{ type: "spring", damping: 50, stiffness: 100 }}
       >
+        {/* Ripples */}
+        <AnimatePresence>
+          {ripples.map(ripple => (
+            <motion.div
+              key={ripple.id}
+              initial={{ scale: 0, opacity: 0.5 }}
+              animate={{ scale: 4, opacity: 0 }}
+              exit={{ opacity: 0 }}
+              transition={{ duration: 2, ease: "easeOut" }}
+              className="absolute w-32 h-32 border border-white/20 rounded-full pointer-events-none"
+              style={{ left: ripple.x - 64, top: ripple.y - 64 }}
+              onAnimationComplete={() => setRipples(prev => prev.filter(r => r.id !== ripple.id))}
+            />
+          ))}
+        </AnimatePresence>
+
         {/* Storm Clouds / Rain Effect */}
         <AnimatePresence>
           {calmLevel < 60 && (

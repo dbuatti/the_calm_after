@@ -3,7 +3,7 @@
 import React, { useState, useEffect, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Wind, Droplets, Eye, X, ListChecks, Compass, Activity, ChevronLeft, Search, SlidersHorizontal } from 'lucide-react';
+import { Wind, Droplets, Eye, X, ListChecks, Compass, Activity, ChevronLeft, Search, SlidersHorizontal, Star } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
@@ -87,15 +87,43 @@ const Tools = () => {
   const [searchQuery, setSearchQuery] = useState('');
   const [intensityFilter, setIntensityFilter] = useState<string | null>(null);
   const [calmLevel, setCalmLevel] = useState(60);
+  const [favorites, setFavorites] = useState<string[]>(() => {
+    const saved = localStorage.getItem('grounding-favorites');
+    return saved ? JSON.parse(saved) : [];
+  });
+  const [lastUsed, setLastUsed] = useState<string | null>(localStorage.getItem('grounding-last-used'));
+
+  useEffect(() => {
+    localStorage.setItem('grounding-favorites', JSON.stringify(favorites));
+  }, [favorites]);
+
+  const toggleFavorite = (e: React.MouseEvent, id: string) => {
+    e.stopPropagation();
+    setFavorites(prev => prev.includes(id) ? prev.filter(f => f !== id) : [...prev, id]);
+  };
+
+  const handleToolClick = (tool: typeof tools[0]) => {
+    setActiveTool(tool);
+    setLastUsed(tool.id);
+    localStorage.setItem('grounding-last-used', tool.id);
+  };
 
   const filteredTools = useMemo(() => {
-    return tools.filter(tool => {
-      const matchesSearch = tool.title.toLowerCase().includes(searchQuery.toLowerCase()) || 
-                           tool.description.toLowerCase().includes(searchQuery.toLowerCase());
-      const matchesIntensity = intensityFilter ? tool.intensity === intensityFilter : true;
-      return matchesSearch && matchesIntensity;
-    });
-  }, [searchQuery, intensityFilter]);
+    return tools
+      .filter(tool => {
+        const matchesSearch = tool.title.toLowerCase().includes(searchQuery.toLowerCase()) || 
+                             tool.description.toLowerCase().includes(searchQuery.toLowerCase());
+        const matchesIntensity = intensityFilter ? tool.intensity === intensityFilter : true;
+        return matchesSearch && matchesIntensity;
+      })
+      .sort((a, b) => {
+        const aFav = favorites.includes(a.id);
+        const bFav = favorites.includes(b.id);
+        if (aFav && !bFav) return -1;
+        if (!aFav && bFav) return 1;
+        return 0;
+      });
+  }, [searchQuery, intensityFilter, favorites]);
 
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
@@ -187,20 +215,37 @@ const Tools = () => {
                 transition={{ duration: 0.4, ease: [0.22, 1, 0.36, 1] }}
               >
                 <Card 
-                  className="bg-white/[0.03] backdrop-blur-2xl border-white/10 text-white hover:bg-white/[0.08] transition-all duration-500 cursor-pointer group h-full overflow-hidden rounded-[40px] active:scale-[0.98] relative"
-                  onClick={() => setActiveTool(tool)}
+                  className={`bg-white/[0.03] backdrop-blur-2xl border-white/10 text-white hover:bg-white/[0.08] transition-all duration-500 cursor-pointer group h-full overflow-hidden rounded-[40px] active:scale-[0.98] relative ${lastUsed === tool.id ? 'ring-2 ring-sky-500/20' : ''}`}
+                  onClick={() => handleToolClick(tool)}
                 >
                   <CardContent className="p-10 flex flex-col h-full">
                     <div className="flex justify-between items-start mb-8">
                       <div className={`w-16 h-16 ${tool.bg} rounded-[22px] flex items-center justify-center ${tool.color} group-hover:scale-110 group-hover:rotate-3 transition-all duration-500`}>
                         <tool.icon className="w-8 h-8" />
                       </div>
-                      <Badge variant="outline" className="bg-white/5 border-white/10 text-[10px] font-bold uppercase tracking-widest px-3 py-1">
-                        {tool.intensity}
-                      </Badge>
+                      <div className="flex items-center space-x-2">
+                        {lastUsed === tool.id && (
+                          <Badge variant="outline" className="bg-sky-500/10 border-sky-500/20 text-sky-400 text-[8px] font-bold uppercase tracking-widest px-2 py-0.5">
+                            Recent
+                          </Badge>
+                        )}
+                        <Button
+                          variant="ghost"
+                          size="icon"
+                          onClick={(e) => toggleFavorite(e, tool.id)}
+                          className={`w-8 h-8 rounded-full transition-colors ${favorites.includes(tool.id) ? 'text-amber-400 bg-amber-400/10' : 'text-white/20 hover:text-white/40'}`}
+                        >
+                          <Star className={`w-4 h-4 ${favorites.includes(tool.id) ? 'fill-current' : ''}`} />
+                        </Button>
+                      </div>
                     </div>
                     <div className="space-y-4">
-                      <h3 className="text-2xl font-bold tracking-tight">{tool.title}</h3>
+                      <div className="flex items-center justify-between">
+                        <h3 className="text-2xl font-bold tracking-tight">{tool.title}</h3>
+                        <Badge variant="outline" className="bg-white/5 border-white/10 text-[8px] font-bold uppercase tracking-widest px-2 py-0.5">
+                          {tool.intensity}
+                        </Badge>
+                      </div>
                       <p className="text-white/40 text-sm leading-relaxed font-light">{tool.description}</p>
                     </div>
                   </CardContent>
