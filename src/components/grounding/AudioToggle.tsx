@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState, useEffect, useRef } from 'react';
-import { Volume2, VolumeX, Music, Wind } from 'lucide-react';
+import { Volume2, VolumeX, Music, Wind, Waves, Bird, Settings2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Slider } from '@/components/ui/slider';
@@ -14,54 +14,74 @@ const AudioToggle: React.FC<AudioToggleProps> = ({ calmLevel }) => {
   const [isPlaying, setIsPlaying] = useState(false);
   const [showPanel, setShowPanel] = useState(false);
   const [masterVolume, setMasterVolume] = useState(30);
+  const [activeSound, setActiveSound] = useState<'ambient' | 'waves' | 'forest'>('ambient');
   
   const stormAudioRef = useRef<HTMLAudioElement | null>(null);
   const calmAudioRef = useRef<HTMLAudioElement | null>(null);
+  const wavesAudioRef = useRef<HTMLAudioElement | null>(null);
+  const forestAudioRef = useRef<HTMLAudioElement | null>(null);
 
   useEffect(() => {
+    // Using placeholder audio URLs - in a real app these would be local assets
     stormAudioRef.current = new Audio('https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3');
     calmAudioRef.current = new Audio('https://www.soundhelix.com/examples/mp3/SoundHelix-Song-2.mp3');
+    wavesAudioRef.current = new Audio('https://www.soundhelix.com/examples/mp3/SoundHelix-Song-3.mp3');
+    forestAudioRef.current = new Audio('https://www.soundhelix.com/examples/mp3/SoundHelix-Song-4.mp3');
     
-    if (stormAudioRef.current) stormAudioRef.current.loop = true;
-    if (calmAudioRef.current) calmAudioRef.current.loop = true;
+    [stormAudioRef, calmAudioRef, wavesAudioRef, forestAudioRef].forEach(ref => {
+      if (ref.current) ref.current.loop = true;
+    });
 
     return () => {
-      stormAudioRef.current?.pause();
-      calmAudioRef.current?.pause();
+      [stormAudioRef, calmAudioRef, wavesAudioRef, forestAudioRef].forEach(ref => ref.current?.pause());
     };
   }, []);
 
   useEffect(() => {
+    const allRefs = [stormAudioRef, calmAudioRef, wavesAudioRef, forestAudioRef];
+    
     if (!isPlaying) {
-      stormAudioRef.current?.pause();
-      calmAudioRef.current?.pause();
+      allRefs.forEach(ref => ref.current?.pause());
       return;
     }
 
-    stormAudioRef.current?.play().catch(() => setIsPlaying(false));
-    calmAudioRef.current?.play().catch(() => setIsPlaying(false));
+    // Play logic based on active sound
+    if (activeSound === 'ambient') {
+      stormAudioRef.current?.play().catch(() => {});
+      calmAudioRef.current?.play().catch(() => {});
+      wavesAudioRef.current?.pause();
+      forestAudioRef.current?.pause();
+      
+      const stormBase = Math.max(0, Math.min(1, (60 - calmLevel) / 60));
+      const calmBase = Math.max(0, Math.min(1, (calmLevel - 40) / 60));
+      
+      if (stormAudioRef.current) stormAudioRef.current.volume = stormBase * (masterVolume / 100);
+      if (calmAudioRef.current) calmAudioRef.current.volume = calmBase * (masterVolume / 100);
+    } else if (activeSound === 'waves') {
+      wavesAudioRef.current?.play().catch(() => {});
+      [stormAudioRef, calmAudioRef, forestAudioRef].forEach(ref => ref.current?.pause());
+      if (wavesAudioRef.current) wavesAudioRef.current.volume = masterVolume / 100;
+    } else if (activeSound === 'forest') {
+      forestAudioRef.current?.play().catch(() => {});
+      [stormAudioRef, calmAudioRef, wavesAudioRef].forEach(ref => ref.current?.pause());
+      if (forestAudioRef.current) forestAudioRef.current.volume = masterVolume / 100;
+    }
 
-    const stormBase = Math.max(0, Math.min(1, (60 - calmLevel) / 60));
-    const calmBase = Math.max(0, Math.min(1, (calmLevel - 40) / 60));
-
-    if (stormAudioRef.current) stormAudioRef.current.volume = stormBase * (masterVolume / 100);
-    if (calmAudioRef.current) calmAudioRef.current.volume = calmBase * (masterVolume / 100);
-
-  }, [isPlaying, calmLevel, masterVolume]);
+  }, [isPlaying, calmLevel, masterVolume, activeSound]);
 
   return (
-    <div className="fixed bottom-8 right-8 z-50 flex flex-col items-end space-y-4">
+    <div className="fixed bottom-6 right-6 md:bottom-10 md:right-10 z-[60] flex flex-col items-end space-y-4">
       <AnimatePresence>
         {showPanel && (
           <motion.div
             initial={{ opacity: 0, y: 20, scale: 0.95 }}
             animate={{ opacity: 1, y: 0, scale: 1 }}
             exit={{ opacity: 0, y: 20, scale: 0.95 }}
-            className="bg-white/[0.03] backdrop-blur-3xl border border-white/10 p-6 rounded-[32px] w-64 shadow-2xl space-y-6"
+            className="bg-slate-950/40 backdrop-blur-3xl border border-white/10 p-6 rounded-[40px] w-72 shadow-2xl space-y-8"
           >
             <div className="space-y-4">
               <div className="flex justify-between items-center">
-                <span className="text-[10px] font-bold uppercase tracking-widest text-white/40">Ambient Mix</span>
+                <span className="text-[10px] font-black uppercase tracking-widest text-white/40">Master Volume</span>
                 <span className="text-[10px] font-bold text-white/60">{masterVolume}%</span>
               </div>
               <Slider 
@@ -73,45 +93,64 @@ const AudioToggle: React.FC<AudioToggleProps> = ({ calmLevel }) => {
               />
             </div>
             
-            <div className="grid grid-cols-2 gap-2">
-              <div className="flex flex-col items-center p-3 bg-white/5 rounded-2xl space-y-2">
-                <Wind className={`w-4 h-4 ${calmLevel < 60 ? 'text-sky-400' : 'text-white/20'}`} />
-                <span className="text-[8px] font-bold uppercase tracking-tighter text-white/40">Storm</span>
-              </div>
-              <div className="flex flex-col items-center p-3 bg-white/5 rounded-2xl space-y-2">
-                <Music className={`w-4 h-4 ${calmLevel > 40 ? 'text-purple-400' : 'text-white/20'}`} />
-                <span className="text-[8px] font-bold uppercase tracking-tighter text-white/40">Calm</span>
+            <div className="space-y-4">
+              <span className="text-[10px] font-black uppercase tracking-widest text-white/40">Soundscape</span>
+              <div className="grid grid-cols-3 gap-2">
+                <Button
+                  variant="ghost"
+                  onClick={() => setActiveSound('ambient')}
+                  className={`flex flex-col items-center h-20 rounded-2xl space-y-2 transition-all ${activeSound === 'ambient' ? 'bg-white/10 text-sky-400' : 'bg-white/5 text-white/20'}`}
+                >
+                  <Wind className="w-5 h-5" />
+                  <span className="text-[8px] font-bold uppercase tracking-tighter">Storm</span>
+                </Button>
+                <Button
+                  variant="ghost"
+                  onClick={() => setActiveSound('waves')}
+                  className={`flex flex-col items-center h-20 rounded-2xl space-y-2 transition-all ${activeSound === 'waves' ? 'bg-white/10 text-blue-400' : 'bg-white/5 text-white/20'}`}
+                >
+                  <Waves className="w-5 h-5" />
+                  <span className="text-[8px] font-bold uppercase tracking-tighter">Waves</span>
+                </Button>
+                <Button
+                  variant="ghost"
+                  onClick={() => setActiveSound('forest')}
+                  className={`flex flex-col items-center h-20 rounded-2xl space-y-2 transition-all ${activeSound === 'forest' ? 'bg-white/10 text-emerald-400' : 'bg-white/5 text-white/20'}`}
+                >
+                  <Bird className="w-5 h-5" />
+                  <span className="text-[8px] font-bold uppercase tracking-tighter">Forest</span>
+                </Button>
               </div>
             </div>
           </motion.div>
         )}
       </AnimatePresence>
       
-      <div className="flex items-center space-x-4">
+      <div className="flex items-center space-x-3">
         <Button
           variant="ghost"
           size="icon"
           onClick={() => setShowPanel(!showPanel)}
-          className={`w-14 h-14 rounded-full bg-white/5 backdrop-blur-2xl border border-white/10 hover:bg-white/10 text-white transition-all duration-500 ${showPanel ? 'bg-white/10 border-white/20' : ''}`}
+          className={`w-14 h-14 md:w-16 md:h-16 rounded-full bg-white/5 backdrop-blur-2xl border border-white/10 hover:bg-white/10 text-white transition-all duration-500 ${showPanel ? 'bg-white/10 border-white/20 rotate-90' : ''}`}
         >
-          <Music className="h-5 w-5" />
+          <Settings2 className="h-5 w-5 md:h-6 md:w-6" />
         </Button>
         
         <Button
           variant="ghost"
           size="icon"
           onClick={() => setIsPlaying(!isPlaying)}
-          className={`relative w-14 h-14 rounded-full bg-white/5 backdrop-blur-2xl border border-white/10 hover:bg-white/10 text-white transition-all duration-500 ${isPlaying ? 'shadow-[0_0_20px_rgba(255,255,255,0.1)]' : ''}`}
+          className={`relative w-14 h-14 md:w-16 md:h-16 rounded-full bg-white/5 backdrop-blur-2xl border border-white/10 hover:bg-white/10 text-white transition-all duration-500 ${isPlaying ? 'shadow-[0_0_30px_rgba(255,255,255,0.1)]' : ''}`}
         >
           {isPlaying && (
             <motion.div
               layoutId="audio-pulse"
               className="absolute inset-0 rounded-full border border-white/20"
-              animate={{ scale: [1, 1.4], opacity: [0.5, 0] }}
+              animate={{ scale: [1, 1.5], opacity: [0.5, 0] }}
               transition={{ duration: 2, repeat: Infinity }}
             />
           )}
-          {isPlaying ? <Volume2 className="h-6 w-6" /> : <VolumeX className="h-6 w-6" />}
+          {isPlaying ? <Volume2 className="h-6 w-6 md:h-7 md:w-7" /> : <VolumeX className="h-6 w-6 md:h-7 md:w-7" />}
         </Button>
       </div>
     </div>
