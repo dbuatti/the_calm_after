@@ -5,6 +5,7 @@ import { Volume2, VolumeX, Music, Wind, Waves, Bird, Settings2, Sparkles } from 
 import { Button } from '@/components/ui/button';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Slider } from '@/components/ui/slider';
+import { toast } from "sonner";
 
 interface AudioToggleProps {
   calmLevel: number;
@@ -29,8 +30,12 @@ const AudioToggle: React.FC<AudioToggleProps> = ({ calmLevel }) => {
     wavesAudioRef.current = new Audio('https://www.soundhelix.com/examples/mp3/SoundHelix-Song-3.mp3');
     forestAudioRef.current = new Audio('https://www.soundhelix.com/examples/mp3/SoundHelix-Song-4.mp3');
     
-    // Your custom meditation track (expects file at public/crystal-waves.mp3)
-    healingAudioRef.current = new Audio('/crystal-waves.mp3');
+    // Your custom meditation track
+    const healingAudio = new Audio('/crystal-waves.mp3');
+    healingAudio.addEventListener('error', (e) => {
+      console.error("Failed to load crystal-waves.mp3. Ensure it is in the public/ folder.", e);
+    });
+    healingAudioRef.current = healingAudio;
     
     const allRefs = [stormAudioRef, calmAudioRef, wavesAudioRef, forestAudioRef, healingAudioRef];
     
@@ -62,7 +67,7 @@ const AudioToggle: React.FC<AudioToggleProps> = ({ calmLevel }) => {
       return;
     }
 
-    // Pause everything first to ensure clean transitions
+    // Pause everything first
     allRefs.forEach(ref => {
       if (ref.current) {
         ref.current.pause();
@@ -70,28 +75,34 @@ const AudioToggle: React.FC<AudioToggleProps> = ({ calmLevel }) => {
       }
     });
 
+    const playAudio = async (audio: HTMLAudioElement | null) => {
+      if (!audio) return;
+      try {
+        audio.volume = masterVolume / 100;
+        await audio.play();
+      } catch (err) {
+        console.error("Playback failed:", err);
+        if (activeSound === 'healing') {
+          toast.error("Could not play 'crystal-waves.mp3'. Check if the file exists in the public folder.");
+        }
+      }
+    };
+
     if (activeSound === 'ambient') {
-      stormAudioRef.current?.play().catch(() => {});
-      calmAudioRef.current?.play().catch(() => {});
-      
-      const stormBase = Math.max(0, Math.min(1, (60 - calmLevel) / 60));
-      const calmBase = Math.max(0, Math.min(1, (calmLevel - 40) / 60));
-      
-      if (stormAudioRef.current) stormAudioRef.current.volume = stormBase * (masterVolume / 100);
-      if (calmAudioRef.current) calmAudioRef.current.volume = calmBase * (masterVolume / 100);
+      if (stormAudioRef.current && calmAudioRef.current) {
+        const stormBase = Math.max(0, Math.min(1, (60 - calmLevel) / 60));
+        const calmBase = Math.max(0, Math.min(1, (calmLevel - 40) / 60));
+        
+        stormAudioRef.current.volume = stormBase * (masterVolume / 100);
+        calmAudioRef.current.volume = calmBase * (masterVolume / 100);
+        
+        stormAudioRef.current.play().catch(() => {});
+        calmAudioRef.current.play().catch(() => {});
+      }
     } 
-    else if (activeSound === 'waves') {
-      wavesAudioRef.current?.play().catch(() => {});
-      if (wavesAudioRef.current) wavesAudioRef.current.volume = masterVolume / 100;
-    } 
-    else if (activeSound === 'forest') {
-      forestAudioRef.current?.play().catch(() => {});
-      if (forestAudioRef.current) forestAudioRef.current.volume = masterVolume / 100;
-    }
-    else if (activeSound === 'healing') {
-      healingAudioRef.current?.play().catch(() => {});
-      if (healingAudioRef.current) healingAudioRef.current.volume = masterVolume / 100;
-    }
+    else if (activeSound === 'waves') playAudio(wavesAudioRef.current);
+    else if (activeSound === 'forest') playAudio(forestAudioRef.current);
+    else if (activeSound === 'healing') playAudio(healingAudioRef.current);
 
   }, [isPlaying, calmLevel, masterVolume, activeSound]);
 
