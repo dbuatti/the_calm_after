@@ -81,22 +81,27 @@ const Session = () => {
       <StormBackground calmLevel={step.calmLevel} />
       <AudioToggle calmLevel={step.calmLevel} />
 
-      <div className="fixed top-0 left-0 w-full p-6 z-20 flex items-center justify-between">
+      <div className="fixed top-0 left-0 w-full p-8 z-20 flex items-center justify-between max-w-7xl mx-auto left-1/2 -translate-x-1/2">
         <Button
           variant="ghost"
           size="icon"
           onClick={() => navigate('/')}
-          className="text-white/60 hover:text-white hover:bg-white/10"
+          className="text-white/40 hover:text-white hover:bg-white/10 rounded-full w-12 h-12 transition-all"
         >
-          <Home className="h-6 w-6" />
+          <Home className="h-5 w-5" />
         </Button>
         
-        <div className="flex-1 max-w-md mx-8">
-          <Progress value={progress} className="h-1 bg-white/10" />
+        <div className="flex-1 max-w-md mx-12 space-y-2">
+          <Progress value={progress} className="h-1 bg-white/5" />
+          <div className="flex justify-between text-[10px] font-bold uppercase tracking-[0.2em] text-white/20">
+            <span>Beginning</span>
+            <span>{Math.round(progress)}% Complete</span>
+            <span>Clarity</span>
+          </div>
         </div>
         
-        <div className="text-white/40 text-sm font-medium w-12 text-right">
-          {currentStep + 1}/{steps.length}
+        <div className="text-white/40 text-xs font-black w-12 text-right tabular-nums">
+          {currentStep + 1} / {steps.length}
         </div>
       </div>
 
@@ -109,22 +114,22 @@ const Session = () => {
           >
             {step.component && step.component(true)}
             
-            <div className="flex items-center justify-center space-x-4 mt-12">
+            <div className="flex items-center justify-center space-x-6 mt-16">
               {currentStep > 0 && (
                 <Button
                   variant="outline"
                   size="lg"
                   onClick={prevStep}
-                  className="bg-transparent border-white/20 text-white hover:bg-white/10 px-8"
+                  className="bg-transparent border-white/10 text-white/60 hover:text-white hover:bg-white/5 px-10 h-16 rounded-full font-bold uppercase tracking-widest text-xs transition-all"
                 >
-                  <ChevronLeft className="mr-2 h-5 w-5" /> Back
+                  <ChevronLeft className="mr-2 h-4 w-4" /> Back
                 </Button>
               )}
               
               <Button
                 size="lg"
                 onClick={nextStep}
-                className="bg-white text-slate-900 hover:bg-sky-100 px-12 font-bold shadow-lg"
+                className="bg-white text-slate-950 hover:bg-sky-100 px-14 h-16 rounded-full font-black uppercase tracking-widest text-sm shadow-2xl shadow-white/10 transition-all hover:scale-105 active:scale-95"
               >
                 {currentStep === steps.length - 1 ? (
                   <>Finish <CheckCircle2 className="ml-2 h-5 w-5" /></>
