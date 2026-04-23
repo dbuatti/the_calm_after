@@ -22,7 +22,6 @@ const AudioToggle: React.FC<AudioToggleProps> = ({ calmLevel }) => {
   const forestAudioRef = useRef<HTMLAudioElement | null>(null);
 
   useEffect(() => {
-    // Using placeholder audio URLs - in a real app these would be local assets
     stormAudioRef.current = new Audio('https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3');
     calmAudioRef.current = new Audio('https://www.soundhelix.com/examples/mp3/SoundHelix-Song-2.mp3');
     wavesAudioRef.current = new Audio('https://www.soundhelix.com/examples/mp3/SoundHelix-Song-3.mp3');
@@ -32,8 +31,16 @@ const AudioToggle: React.FC<AudioToggleProps> = ({ calmLevel }) => {
       if (ref.current) ref.current.loop = true;
     });
 
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key.toLowerCase() === 'm') {
+        setIsPlaying(prev => !prev);
+      }
+    };
+    window.addEventListener('keydown', handleKeyDown);
+
     return () => {
       [stormAudioRef, calmAudioRef, wavesAudioRef, forestAudioRef].forEach(ref => ref.current?.pause());
+      window.removeEventListener('keydown', handleKeyDown);
     };
   }, []);
 
@@ -45,7 +52,6 @@ const AudioToggle: React.FC<AudioToggleProps> = ({ calmLevel }) => {
       return;
     }
 
-    // Play logic based on active sound
     if (activeSound === 'ambient') {
       stormAudioRef.current?.play().catch(() => {});
       calmAudioRef.current?.play().catch(() => {});
@@ -153,6 +159,7 @@ const AudioToggle: React.FC<AudioToggleProps> = ({ calmLevel }) => {
           {isPlaying ? <Volume2 className="h-6 w-6 md:h-7 md:w-7" /> : <VolumeX className="h-6 w-6 md:h-7 md:w-7" />}
         </Button>
       </div>
+      <div className="hidden md:block text-[8px] font-bold text-white/10 uppercase tracking-widest pr-2">Press 'M' to Mute</div>
     </div>
   );
 };

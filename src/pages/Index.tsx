@@ -15,12 +15,18 @@ const Index = () => {
   const navigate = useNavigate();
   const [favorites, setFavorites] = useState<string[]>([]);
   const [lastUsed, setLastUsed] = useState<string | null>(null);
+  const [greeting, setGreeting] = useState('Welcome');
 
   useEffect(() => {
     const savedFavs = localStorage.getItem('grounding-favorites');
     const savedLast = localStorage.getItem('grounding-last-used');
     if (savedFavs) setFavorites(JSON.parse(savedFavs));
     if (savedLast) setLastUsed(savedLast);
+
+    const hour = new Date().getHours();
+    if (hour < 12) setGreeting('Good Morning');
+    else if (hour < 17) setGreeting('Good Afternoon');
+    else setGreeting('Good Evening');
   }, []);
 
   const handleMoodSuggest = (intensity: string) => {
@@ -64,7 +70,7 @@ const Index = () => {
             <MindfulQuotes />
             <motion.div variants={itemVariants} className="inline-flex items-center space-x-2 px-5 py-2 bg-white/5 rounded-full border border-white/10 text-sky-300 text-[9px] md:text-[10px] font-bold uppercase tracking-[0.3em] backdrop-blur-md">
               <Sparkles className="w-3 h-3" />
-              <span>Find your center</span>
+              <span>{greeting}</span>
             </motion.div>
           </div>
           

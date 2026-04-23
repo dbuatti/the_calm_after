@@ -3,7 +3,7 @@
 import React, { useState, useEffect, useMemo } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Wind, Droplets, Eye, X, ListChecks, Compass, Activity, ChevronLeft, Search, SlidersHorizontal, Star, Zap, Footprints } from 'lucide-react';
+import { Wind, Droplets, Eye, X, ListChecks, Compass, Activity, ChevronLeft, Search, SlidersHorizontal, Star, Zap, Footprints, Clock } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
@@ -27,6 +27,7 @@ const tools = [
     color: 'text-emerald-400',
     bg: 'bg-emerald-500/10',
     intensity: 'Low',
+    duration: '10m',
     description: 'Connect directly with the Earth to reduce inflammation and stress.',
     component: <EarthingGuide />,
   },
@@ -37,6 +38,7 @@ const tools = [
     color: 'text-sky-400',
     bg: 'bg-sky-500/10',
     intensity: 'Low',
+    duration: '3m',
     description: 'Focus on the sensory details of air moving through your body.',
     component: <BalloonBreathing />,
   },
@@ -47,6 +49,7 @@ const tools = [
     color: 'text-purple-400',
     bg: 'bg-purple-500/10',
     intensity: 'Medium',
+    duration: '5m',
     description: 'A comprehensive self-awareness scan for pain, tension, and safety.',
     component: <SelfAwarenessPITCHES />,
   },
@@ -57,6 +60,7 @@ const tools = [
     color: 'text-teal-400',
     bg: 'bg-teal-500/10',
     intensity: 'Medium',
+    duration: '2m',
     description: 'Engage your logical mind by narrating actions or stating problems.',
     component: <NarrationTool />,
   },
@@ -67,6 +71,7 @@ const tools = [
     color: 'text-amber-400',
     bg: 'bg-amber-500/10',
     intensity: 'Low',
+    duration: '3m',
     description: 'Describe your environment in detail to anchor yourself in the present.',
     component: <OpenAwareness />,
   },
@@ -77,6 +82,7 @@ const tools = [
     color: 'text-blue-400',
     bg: 'bg-blue-500/10',
     intensity: 'High',
+    duration: '1m',
     description: 'Use cold water to activate your nervous system\'s "calm" switch.',
     component: <ColdWaterExercise />,
   },
@@ -87,6 +93,7 @@ const tools = [
     color: 'text-rose-400',
     bg: 'bg-rose-500/10',
     intensity: 'Medium',
+    duration: '5m',
     description: 'Engage all your senses to return to the present moment.',
     component: <SensoryGrounding />,
   },
@@ -179,8 +186,18 @@ const Tools = () => {
               placeholder="Search tools..." 
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              className="bg-white/5 border-white/10 rounded-full pl-12 h-12 text-white placeholder:text-white/20 focus:ring-sky-500/50"
+              className="bg-white/5 border-white/10 rounded-full pl-12 pr-12 h-12 text-white placeholder:text-white/20 focus:ring-sky-500/50"
             />
+            {searchQuery && (
+              <Button
+                variant="ghost"
+                size="icon"
+                onClick={() => setSearchQuery('')}
+                className="absolute right-4 top-1/2 -translate-y-1/2 w-6 h-6 text-white/20 hover:text-white rounded-full"
+              >
+                <X className="w-3 h-3" />
+              </Button>
+            )}
           </div>
           
           <div className="flex bg-white/5 p-1 rounded-full border border-white/10 w-full md:w-auto overflow-x-auto no-scrollbar">
@@ -251,11 +268,9 @@ const Tools = () => {
                         <tool.icon className="w-7 h-7 md:w-8 md:h-8" />
                       </div>
                       <div className="flex items-center space-x-2">
-                        {lastUsed === tool.id && (
-                          <Badge variant="outline" className="bg-sky-500/10 border-sky-500/20 text-sky-400 text-[8px] font-bold uppercase tracking-widest px-2 py-0.5">
-                            Recent
-                          </Badge>
-                        )}
+                        <Badge variant="outline" className="bg-white/5 border-white/10 text-[8px] font-bold uppercase tracking-widest px-2 py-0.5 flex items-center">
+                          <Clock className="w-3 h-3 mr-1" /> {tool.duration}
+                        </Badge>
                         <Button
                           variant="ghost"
                           size="icon"
@@ -325,6 +340,9 @@ const Tools = () => {
                   <div className="flex items-center justify-center space-x-2">
                     <Badge variant="outline" className="bg-white/5 border-white/10 text-[9px] md:text-[10px] font-bold uppercase tracking-widest px-3 py-1">
                       {activeTool.intensity} Intensity
+                    </Badge>
+                    <Badge variant="outline" className="bg-white/5 border-white/10 text-[9px] md:text-[10px] font-bold uppercase tracking-widest px-3 py-1">
+                      {activeTool.duration}
                     </Badge>
                   </div>
                   <h2 className="text-3xl md:text-5xl font-black text-white tracking-tighter uppercase">{activeTool.title}</h2>

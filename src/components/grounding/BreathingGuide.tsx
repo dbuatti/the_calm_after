@@ -26,6 +26,7 @@ const BreathingGuide: React.FC<BreathingGuideProps> = ({ isActive }) => {
   const [patternIndex, setPatternIndex] = useState(0);
   const [phase, setPhase] = useState<'inhale' | 'hold' | 'exhale' | 'holdEmpty'>('inhale');
   const [timer, setTimer] = useState(0);
+  const [cycles, setCycles] = useState(0);
   
   const pattern = patterns[patternIndex];
 
@@ -33,6 +34,7 @@ const BreathingGuide: React.FC<BreathingGuideProps> = ({ isActive }) => {
     if (!isActive) {
       setPhase('inhale');
       setTimer(0);
+      setCycles(0);
       return;
     }
 
@@ -45,7 +47,6 @@ const BreathingGuide: React.FC<BreathingGuideProps> = ({ isActive }) => {
                            (pattern.holdEmpty || 0);
 
         if (next >= currentLimit) {
-          // Haptic feedback on phase change
           if (typeof navigator !== 'undefined' && navigator.vibrate) {
             navigator.vibrate(50);
           }
@@ -54,9 +55,15 @@ const BreathingGuide: React.FC<BreathingGuideProps> = ({ isActive }) => {
           else if (phase === 'hold') setPhase('exhale');
           else if (phase === 'exhale') {
             if (pattern.holdEmpty) setPhase('holdEmpty');
-            else setPhase('inhale');
+            else {
+              setPhase('inhale');
+              setCycles(c => c + 1);
+            }
           }
-          else if (phase === 'holdEmpty') setPhase('inhale');
+          else if (phase === 'holdEmpty') {
+            setPhase('inhale');
+            setCycles(c => c + 1);
+          }
           return 0;
         }
         return next;
@@ -81,7 +88,7 @@ const BreathingGuide: React.FC<BreathingGuideProps> = ({ isActive }) => {
             key={p.name}
             variant="ghost"
             size="sm"
-            onClick={() => { setPatternIndex(i); setPhase('inhale'); setTimer(0); }}
+            onClick={() => { setPatternIndex(i); setPhase('inhale'); setTimer(0); setCycles(0); }}
             className={`rounded-full px-4 h-8 text-[10px] font-bold uppercase tracking-widest transition-all ${patternIndex === i ? 'bg-white text-slate-950' : 'text-white/40 hover:text-white'}`}
           >
             {p.name}
@@ -131,8 +138,19 @@ const BreathingGuide: React.FC<BreathingGuideProps> = ({ isActive }) => {
         </svg>
       </div>
       
-      <div className="text-white/20 text-[10px] font-bold uppercase tracking-[0.3em]">
-        {pattern.inhale}-{pattern.hold}-{pattern.exhale}{pattern.holdEmpty ? `-${pattern.holdEmpty}` : ''} Rhythm
+      <div className="flex flex-col items-center space-y-2">
+        <div className="text-white/20 text-[10px] font-bold uppercase tracking-[0.3em]">
+          {pattern.inhale}-{pattern.hold}-{pattern.exhale}{pattern.holdEmpty ? `-${pattern.holdEmpty}` : ''} Rhythm
+        </div>
+        {cycles > 0 && (
+          <motion.div 
+            initial={{ opacity: 0, y: 5 }}
+            animate={{ opacity: 1, y: 0 }}
+            className="text-sky-400/40 text-[9px] font-black uppercase tracking-widest"
+          >
+            Cycle {cycles} Complete
+          </motion.div>
+        )}
       </div>
     </div>
   );
