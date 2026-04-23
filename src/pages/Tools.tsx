@@ -3,14 +3,53 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Home, Wind, Droplets, MessageSquare, Eye, X } from 'lucide-react';
+import { Home, Wind, Droplets, MessageSquare, Eye, X, ListChecks, Compass, Activity } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import StormBackground from '@/components/grounding/StormBackground';
-import BreathingGuide from '@/components/grounding/BreathingGuide';
+import BalloonBreathing from '@/components/grounding/BalloonBreathing';
 import ColdWaterExercise from '@/components/grounding/ColdWaterExercise';
+import NarrationTool from '@/components/grounding/NarrationTool';
+import OpenAwareness from '@/components/grounding/OpenAwareness';
+import SelfAwarenessPITCHES from '@/components/grounding/SelfAwarenessPITCHES';
 
 const tools = [
+  {
+    id: 'balloon',
+    title: 'Balloon Breathing',
+    icon: Wind,
+    color: 'text-sky-400',
+    bg: 'bg-sky-500/10',
+    description: 'Focus on the sensory details of air moving through your body.',
+    component: <BalloonBreathing />,
+  },
+  {
+    id: 'pitches',
+    title: 'PITCHES Check',
+    icon: Activity,
+    color: 'text-purple-400',
+    bg: 'bg-purple-500/10',
+    description: 'A comprehensive self-awareness scan for pain, tension, and safety.',
+    component: <SelfAwarenessPITCHES />,
+  },
+  {
+    id: 'narration',
+    title: 'Narration Tool',
+    icon: ListChecks,
+    color: 'text-teal-400',
+    bg: 'bg-teal-500/10',
+    description: 'Engage your logical mind by narrating actions or stating problems.',
+    component: <NarrationTool />,
+  },
+  {
+    id: 'open',
+    title: 'Open Awareness',
+    icon: Compass,
+    color: 'text-amber-400',
+    bg: 'bg-amber-500/10',
+    description: 'Describe your environment in detail to anchor yourself in the present.',
+    component: <OpenAwareness />,
+  },
   {
     id: 'dive',
     title: 'Dive Reflex',
@@ -21,58 +60,34 @@ const tools = [
     component: <ColdWaterExercise />,
   },
   {
-    id: 'breathe',
-    title: 'Just Breathe',
-    icon: Wind,
-    color: 'text-sky-400',
-    bg: 'bg-sky-500/10',
-    description: 'A simple 4-4-4 breathing cycle to slow your heart rate.',
-    component: <BreathingGuide inhaleTime={4} holdTime={4} exhaleTime={4} isActive={true} />,
-  },
-  {
     id: 'sensory',
     title: '5-4-3-2-1 Technique',
     icon: Eye,
-    color: 'text-amber-400',
-    bg: 'bg-amber-500/10',
+    color: 'text-rose-400',
+    bg: 'bg-rose-500/10',
     description: 'Engage all your senses to return to the present moment.',
     content: (
       <div className="grid grid-cols-1 gap-4 text-left max-w-md mx-auto">
         <div className="flex items-center space-x-3 bg-white/5 p-3 rounded-lg">
-          <span className="text-amber-400 font-bold text-xl w-6">5</span>
-          <span className="text-white/80">Things you see (a chair, a person, the window)</span>
+          <span className="text-rose-400 font-bold text-xl w-6">5</span>
+          <span className="text-white/80">Things you see (or 5 green things)</span>
         </div>
         <div className="flex items-center space-x-3 bg-white/5 p-3 rounded-lg">
-          <span className="text-amber-400 font-bold text-xl w-6">4</span>
-          <span className="text-white/80">Things you can touch (fabric, a plant leaf)</span>
-        </div>
-        <div className="flex items-center space-x-3 bg-white/5 p-3 rounded-lg">
-          <span className="text-amber-400 font-bold text-xl w-6">3</span>
+          <span className="text-rose-400 font-bold text-xl w-6">4</span>
           <span className="text-white/80">Things you can hear</span>
         </div>
         <div className="flex items-center space-x-3 bg-white/5 p-3 rounded-lg">
-          <span className="text-amber-400 font-bold text-xl w-6">2</span>
+          <span className="text-rose-400 font-bold text-xl w-6">3</span>
           <span className="text-white/80">Things you can smell</span>
         </div>
         <div className="flex items-center space-x-3 bg-white/5 p-3 rounded-lg">
-          <span className="text-amber-400 font-bold text-xl w-6">1</span>
+          <span className="text-rose-400 font-bold text-xl w-6">2</span>
+          <span className="text-white/80">Things you can feel (cool breeze, clothing)</span>
+        </div>
+        <div className="flex items-center space-x-3 bg-white/5 p-3 rounded-lg">
+          <span className="text-rose-400 font-bold text-xl w-6">1</span>
           <span className="text-white/80">Thing you can taste</span>
         </div>
-      </div>
-    ),
-  },
-  {
-    id: 'affirm',
-    title: 'Affirmations',
-    icon: MessageSquare,
-    color: 'text-purple-400',
-    bg: 'bg-purple-500/10',
-    description: 'Positive statements to anchor your mind.',
-    content: (
-      <div className="space-y-4 text-center">
-        <p className="text-2xl font-medium text-white italic">"I am safe in this moment."</p>
-        <p className="text-2xl font-medium text-white italic">"This feeling is temporary."</p>
-        <p className="text-2xl font-medium text-white italic">"I have the strength to navigate this."</p>
       </div>
     ),
   },
@@ -100,7 +115,7 @@ const Tools = () => {
       </header>
 
       <main className="z-10 flex-1 max-w-5xl mx-auto w-full">
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {tools.map((tool, index) => (
             <motion.div
               key={tool.id}
@@ -109,11 +124,11 @@ const Tools = () => {
               transition={{ delay: index * 0.1 }}
             >
               <Card 
-                className="bg-white/10 backdrop-blur-xl border-white/20 text-white hover:bg-white/15 transition-all cursor-pointer group"
+                className="bg-white/10 backdrop-blur-xl border-white/20 text-white hover:bg-white/15 transition-all cursor-pointer group h-full"
                 onClick={() => setActiveTool(tool)}
               >
-                <CardContent className="p-6 flex items-start space-x-6">
-                  <div className={`w-14 h-14 ${tool.bg} rounded-2xl flex items-center justify-center ${tool.color} group-hover:scale-110 transition-transform shrink-0`}>
+                <CardContent className="p-6 flex flex-col h-full">
+                  <div className={`w-14 h-14 ${tool.bg} rounded-2xl flex items-center justify-center ${tool.color} group-hover:scale-110 transition-transform shrink-0 mb-4`}>
                     <tool.icon className="w-7 h-7" />
                   </div>
                   <div className="space-y-2">
