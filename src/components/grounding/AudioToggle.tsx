@@ -6,12 +6,16 @@ import { Button } from '@/components/ui/button';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Slider } from '@/components/ui/slider';
 import { toast } from "sonner";
+import QuietModeToggle from "./QuietModeToggle";
+import { useQuietMode } from "@/hooks/use-quiet-mode";
+import { hasModifierKey, isDialogOpen, isTypingTarget } from "@/lib/keyboard";
 
 const AudioToggle = () => {
   const [isPlaying, setIsPlaying] = useState(false);
   const [showPanel, setShowPanel] = useState(false);
   const [masterVolume, setMasterVolume] = useState(30);
   const healingAudioRef = useRef<HTMLAudioElement | null>(null);
+  const { quietMode } = useQuietMode();
 
   useEffect(() => {
     // Initialize the healing meditation track
@@ -26,7 +30,13 @@ const AudioToggle = () => {
     healingAudioRef.current = healingAudio;
 
     const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') {
+        setShowPanel(false);
+        return;
+      }
+      if (hasModifierKey(e) || isTypingTarget(e.target) || isDialogOpen()) return;
       if (e.key.toLowerCase() === 'm') {
+        e.preventDefault();
         setIsPlaying(prev => !prev);
       }
     };
@@ -76,8 +86,9 @@ const AudioToggle = () => {
                 <span className="text-[10px] font-black uppercase tracking-widest text-white/40">Master Volume</span>
                 <span className="text-[10px] font-bold text-white/60">{masterVolume}%</span>
               </div>
-              <Slider 
-                value={[masterVolume]} 
+              <Slider
+                aria-label="Master volume"
+                value={[masterVolume]}
                 onValueChange={(v) => setMasterVolume(v[0])} 
                 max={100} 
                 step={1}
@@ -97,6 +108,10 @@ const AudioToggle = () => {
                 </div>
               </div>
             </div>
+
+            <div className="pt-2 border-t border-white/5">
+              <QuietModeToggle compact />
+            </div>
           </motion.div>
         )}
       </AnimatePresence>
@@ -106,18 +121,22 @@ const AudioToggle = () => {
           variant="ghost"
           size="icon"
           onClick={() => setShowPanel(!showPanel)}
+          aria-label={showPanel ? 'Close sound settings' : 'Open sound and visual settings'}
+          aria-expanded={showPanel}
           className={`w-14 h-14 md:w-16 md:h-16 rounded-full bg-white/5 backdrop-blur-2xl border border-white/10 hover:bg-white/10 text-white transition-all duration-500 ${showPanel ? 'bg-white/10 border-white/20 rotate-90' : ''}`}
         >
-          <Settings2 className="h-5 w-5 md:h-6 md:w-6" />
+          <Settings2 className="h-5 w-5 md:h-6 md:w-6" aria-hidden="true" />
         </Button>
         
         <Button
           variant="ghost"
           size="icon"
           onClick={() => setIsPlaying(!isPlaying)}
+          aria-label={isPlaying ? 'Turn sound off (M)' : 'Turn sound on (M)'}
+          aria-pressed={isPlaying}
           className={`relative w-14 h-14 md:w-16 md:h-16 rounded-full bg-white/5 backdrop-blur-2xl border border-white/10 hover:bg-white/10 text-white transition-all duration-500 ${isPlaying ? 'shadow-[0_0_30px_rgba(255,255,255,0.1)]' : ''}`}
         >
-          {isPlaying && (
+          {isPlaying && !quietMode && (
             <motion.div
               layoutId="audio-pulse"
               className="absolute inset-0 rounded-full border border-white/20"
@@ -125,10 +144,10 @@ const AudioToggle = () => {
               transition={{ duration: 2, repeat: Infinity }}
             />
           )}
-          {isPlaying ? <Volume2 className="h-6 w-6 md:h-7 md:w-7" /> : <VolumeX className="h-6 w-6 md:h-7 md:w-7" />}
+          {isPlaying ? <Volume2 className="h-6 w-6 md:h-7 md:w-7" aria-hidden="true" /> : <VolumeX className="h-6 w-6 md:h-7 md:w-7" aria-hidden="true" />}
         </Button>
       </div>
-      <div className="hidden md:block text-[8px] font-bold text-white/10 uppercase tracking-widest pr-2">Press 'M' to Mute</div>
+      <div className="hidden md:block text-[8px] font-bold text-white/10 uppercase tracking-widest pr-2">M = sound on/off</div>
     </div>
   );
 };

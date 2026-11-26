@@ -3,13 +3,14 @@ import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route, useLocation } from "react-router-dom";
-import { AnimatePresence, motion } from "framer-motion";
+import { AnimatePresence, motion, MotionConfig } from "framer-motion";
 import Index from "./pages/Index";
 import Session from "./pages/Session";
 import Tools from "./pages/Tools";
 import NotFound from "./pages/NotFound";
 import BreathingShortcut from "./components/grounding/BreathingShortcut";
 import AudioToggle from "./components/grounding/AudioToggle";
+import { useQuietMode } from "./hooks/use-quiet-mode";
 
 const queryClient = new QueryClient();
 
@@ -40,18 +41,24 @@ const AppRoutes = () => (
   </Routes>
 );
 
-const App = () => (
-  <QueryClientProvider client={queryClient}>
-    <TooltipProvider>
-      <Toaster />
-      <Sonner />
-      <BreathingShortcut />
-      <AudioToggle />
-      <BrowserRouter future={{ v7_startTransition: true, v7_relativeSplatPath: true }}>
-        <AppRoutes />
-      </BrowserRouter>
-    </TooltipProvider>
-  </QueryClientProvider>
-);
+const App = () => {
+  const { quietMode } = useQuietMode();
+
+  return (
+    <MotionConfig reducedMotion={quietMode ? "always" : "user"}>
+      <QueryClientProvider client={queryClient}>
+        <TooltipProvider>
+          <Toaster />
+          <Sonner />
+          <BreathingShortcut />
+          <AudioToggle />
+          <BrowserRouter future={{ v7_startTransition: true, v7_relativeSplatPath: true }}>
+            <AppRoutes />
+          </BrowserRouter>
+        </TooltipProvider>
+      </QueryClientProvider>
+    </MotionConfig>
+  );
+};
 
 export default App;

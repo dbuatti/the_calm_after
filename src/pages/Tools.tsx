@@ -1,444 +1,443 @@
 "use client";
 
-import React, { useState, useEffect, useMemo } from 'react';
-import { useNavigate, useSearchParams } from 'react-router-dom';
-import { motion, AnimatePresence } from 'framer-motion';
-import { Wind, Droplets, Eye, X, ListChecks, Compass, Activity, ChevronLeft, Search, SlidersHorizontal, Star, Zap, Footprints, Clock, Brain, Heart, Accessibility, MapPin, Anchor, Sparkles, Info, Move, AlertCircle, LayoutGrid } from 'lucide-react';
-import { Button } from '@/components/ui/button';
-import { Card, CardContent } from '@/components/ui/card';
-import { Badge } from '@/components/ui/badge';
-import { Input } from '@/components/ui/input';
-import { Slider } from '@/components/ui/slider';
-import StormBackground from '@/components/grounding/StormBackground';
-import BalloonBreathing from '@/components/grounding/BalloonBreathing';
-import ColdWaterExercise from '@/components/grounding/ColdWaterExercise';
-import NarrationTool from '@/components/grounding/NarrationTool';
-import OpenAwareness from '@/components/grounding/OpenAwareness';
-import SelfAwarenessPITCHES from '@/components/grounding/SelfAwarenessPITCHES';
-import SensoryGrounding from '@/components/grounding/SensoryGrounding';
-import EarthingGuide from '@/components/grounding/EarthingGuide';
-import MentalGym from '@/components/grounding/MentalGym';
-import SoothingSanctuary from '@/components/grounding/SoothingSanctuary';
-import BodyScanActive from '@/components/grounding/BodyScanActive';
-import CognitiveReorientation from '@/components/grounding/CognitiveReorientation';
-import SensoryAnchors from '@/components/grounding/SensoryAnchors';
-import BreathingTechniques from '@/components/grounding/BreathingTechniques';
-import MindfulMovement from '@/components/grounding/MindfulMovement';
-import SqueezeHug from '@/components/grounding/SqueezeHug';
-import ButterflyHug from '@/components/grounding/ButterflyHug';
-import ColorSpotting from '@/components/grounding/ColorSpotting';
+import React, { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { useNavigate, useSearchParams } from "react-router-dom";
+import { motion, AnimatePresence } from "framer-motion";
+import {
+  Wind,
+  X,
+  ChevronLeft,
+  Search,
+  SlidersHorizontal,
+  Star,
+  Clock,
+  AlertCircle,
+} from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent } from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
+import { Input } from "@/components/ui/input";
+import { Slider } from "@/components/ui/slider";
+import StormBackground from "@/components/grounding/StormBackground";
+import QuietModeToggle from "@/components/grounding/QuietModeToggle";
+import { categories, getToolById, intensities, tools } from "@/data/tools";
 
-const tools = [
-  {
-    id: 'butterfly-hug',
-    title: 'Butterfly Hug',
-    icon: Sparkles,
-    color: 'text-rose-400',
-    bg: 'bg-rose-500/10',
-    intensity: 'Low',
-    duration: '2m',
-    type: 'Physical',
-    panic: true,
-    description: 'A rhythmic self-tapping technique to soothe the nervous system.',
-    science: 'Bilateral stimulation helps process distressing emotions and reduces physiological arousal.',
-    component: <ButterflyHug />,
-  },
-  {
-    id: 'color-spotting',
-    title: 'Color Spotting',
-    icon: Eye,
-    color: 'text-emerald-400',
-    bg: 'bg-emerald-500/10',
-    intensity: 'Low',
-    duration: '3m',
-    type: 'Sensory',
-    panic: true,
-    description: 'A simple visual search game to pull your focus into the room.',
-    science: 'Engages the visual cortex and requires external focus, breaking internal panic loops.',
-    component: <ColorSpotting />,
-  },
-  {
-    id: 'squeeze-hug',
-    title: 'Squeeze Hug',
-    icon: Heart,
-    color: 'text-rose-400',
-    bg: 'bg-rose-500/10',
-    intensity: 'Low',
-    duration: '2m',
-    type: 'Physical',
-    panic: true,
-    description: 'A self-soothing technique involving a firm hug to provide immediate comfort.',
-    science: 'Provides proprioceptive input that signals safety to the nervous system.',
-    component: <SqueezeHug />,
-  },
-  {
-    id: 'mindful-move',
-    title: 'Mindful Movement',
-    icon: Move,
-    color: 'text-sky-400',
-    bg: 'bg-sky-500/10',
-    intensity: 'Low',
-    duration: '3m',
-    type: 'Physical',
-    description: 'Synchronize your breath with slow, deliberate arm movements.',
-    science: 'Combines physical action with breath control to pull focus back from distressing thoughts.',
-    component: <MindfulMovement />,
-  },
-  {
-    id: 'breathing-tech',
-    title: 'Sensory Breathing',
-    icon: Sparkles,
-    color: 'text-indigo-400',
-    bg: 'bg-indigo-500/10',
-    intensity: 'Low',
-    duration: '4m',
-    type: 'Breath',
-    description: 'Advanced techniques like Lion\'s Breath and Humming Bee for deep sensory regulation.',
-    science: 'Stimulates the vagus nerve to switch the body from "fight or flight" to "rest and digest" mode.',
-    component: <BreathingTechniques />,
-  },
-  {
-    id: 'reorientation',
-    title: 'Cognitive Reorientation',
-    icon: MapPin,
-    color: 'text-sky-400',
-    bg: 'bg-sky-500/10',
-    intensity: 'Medium',
-    duration: '2m',
-    type: 'Mental',
-    panic: true,
-    description: 'Anchor yourself in time and place by answering 7 key re-orienting questions.',
-    science: 'Engages the prefrontal cortex to override the emotional centers of the brain.',
-    component: <CognitiveReorientation />,
-  },
-  {
-    id: 'anchors',
-    title: 'Sensory Anchors',
-    icon: Anchor,
-    color: 'text-emerald-400',
-    bg: 'bg-emerald-500/10',
-    intensity: 'Low',
-    duration: '3m',
-    type: 'Sensory',
-    description: 'Use physical objects like cool cloths or special items to ground your senses.',
-    science: 'Tactile stimulation provides a concrete "anchor" that pulls focus away from internal distress.',
-    component: <SensoryAnchors />,
-  },
-  {
-    id: 'mental-gym',
-    title: 'Mental Gym',
-    icon: Brain,
-    color: 'text-amber-400',
-    bg: 'bg-amber-500/10',
-    intensity: 'Medium',
-    duration: '3m',
-    type: 'Mental',
-    description: 'Cognitive distractions using categories, math, and reverse spelling.',
-    science: 'Forces the brain to use logical processing power, leaving less room for emotional rumination.',
-    component: <MentalGym />,
-  },
-  {
-    id: 'soothing',
-    title: 'Soothing Sanctuary',
-    icon: Heart,
-    color: 'text-rose-400',
-    bg: 'bg-rose-500/10',
-    intensity: 'Low',
-    duration: '5m',
-    type: 'Soothing',
-    description: 'Self-kindness affirmations and visualization of loved ones.',
-    science: 'Activates the care-seeking system, releasing oxytocin to counteract cortisol.',
-    component: <SoothingSanctuary />,
-  },
-  {
-    id: 'active-scan',
-    title: 'Active Body Scan',
-    icon: Accessibility,
-    color: 'text-emerald-400',
-    bg: 'bg-emerald-500/10',
-    intensity: 'Medium',
-    duration: '4m',
-    type: 'Physical',
-    description: 'Physical grounding through stomping, clenching, and stretching.',
-    science: 'Proprioceptive input is a powerful signal of safety to the brain.',
-    component: <BodyScanActive />,
-  },
-  {
-    id: 'earthing',
-    title: 'Physical Earthing',
-    icon: Footprints,
-    color: 'text-emerald-400',
-    bg: 'bg-emerald-500/10',
-    intensity: 'Low',
-    duration: '10m',
-    type: 'Physical',
-    description: 'Connect directly with the Earth to reduce inflammation and stress.',
-    science: 'Direct contact with the Earth allows for an exchange of electrons to regulate circadian rhythms.',
-    component: <EarthingGuide />,
-  },
-  {
-    id: 'balloon',
-    title: 'Balloon Breathing',
-    icon: Wind,
-    color: 'text-sky-400',
-    bg: 'bg-sky-500/10',
-    intensity: 'Low',
-    duration: '3m',
-    type: 'Breath',
-    panic: true,
-    description: 'Focus on the sensory details of air moving through your body.',
-    science: 'Diaphragmatic breathing lowers blood pressure and reduces stress hormones.',
-    component: <BalloonBreathing />,
-  },
-  {
-    id: 'pitches',
-    title: 'PITCHES Check',
-    icon: Activity,
-    color: 'text-purple-400',
-    bg: 'bg-purple-500/10',
-    intensity: 'Medium',
-    duration: '5m',
-    type: 'Mental',
-    description: 'A comprehensive self-awareness scan for pain, tension, and safety.',
-    science: 'Interoception helps identify physical needs that may be masquerading as anxiety.',
-    component: <SelfAwarenessPITCHES />,
-  },
-  {
-    id: 'narration',
-    title: 'Narration Tool',
-    icon: ListChecks,
-    color: 'text-teal-400',
-    bg: 'bg-teal-500/10',
-    intensity: 'Medium',
-    duration: '2m',
-    type: 'Mental',
-    description: 'Engage your logical mind by narrating actions or stating problems.',
-    science: 'Verbalizing actions moves the brain from "experiencing" to "observing".',
-    component: <NarrationTool />,
-  },
-  {
-    id: 'open',
-    title: 'Open Awareness',
-    icon: Compass,
-    color: 'text-amber-400',
-    bg: 'bg-amber-500/10',
-    intensity: 'Low',
-    duration: '3m',
-    type: 'Sensory',
-    description: 'Describe your environment in detail to anchor yourself in the present.',
-    science: 'Externalizing focus breaks the loop of internal panic by forcing visual processing.',
-    component: <OpenAwareness />,
-  },
-  {
-    id: 'dive',
-    title: 'Dive Reflex',
-    icon: Droplets,
-    color: 'text-blue-400',
-    bg: 'bg-blue-500/10',
-    intensity: 'High',
-    duration: '1m',
-    type: 'Physical',
-    description: 'Use cold water to activate your nervous system\'s "calm" switch.',
-    science: 'Triggers the Mammalian Dive Reflex, immediately slowing the heart rate.',
-    component: <ColdWaterExercise />,
-  },
-  {
-    id: 'sensory',
-    title: '5-4-3-2-1 Technique',
-    icon: Eye,
-    color: 'text-rose-400',
-    bg: 'bg-rose-500/10',
-    intensity: 'Medium',
-    duration: '5m',
-    type: 'Sensory',
-    panic: true,
-    description: 'Engage all your senses to return to the present moment.',
-    science: 'Systematically engages all five senses to ground the individual in reality.',
-    component: <SensoryGrounding />,
-  },
-];
+const FAVORITES_KEY = "grounding-favorites";
+const LAST_USED_KEY = "grounding-last-used";
 
-const categories = ['All', 'Physical', 'Mental', 'Sensory', 'Breath', 'Soothing'];
+function readFavorites(): string[] {
+  try {
+    const saved = localStorage.getItem(FAVORITES_KEY);
+    const parsed = saved ? JSON.parse(saved) : [];
+    return Array.isArray(parsed) ? parsed.filter((id): id is string => typeof id === "string") : [];
+  } catch {
+    return [];
+  }
+}
 
 const Tools = () => {
   const navigate = useNavigate();
-  const [searchParams] = useSearchParams();
-  const [activeTool, setActiveTool] = useState<typeof tools[0] | null>(null);
-  const [searchQuery, setSearchQuery] = useState('');
-  const [categoryFilter, setCategoryFilter] = useState('All');
-  const [isPanicMode, setIsPanicMode] = useState(searchParams.get('panic') === 'true');
+  const [searchParams, setSearchParams] = useSearchParams();
   const [calmLevel, setCalmLevel] = useState(60);
-  const [favorites, setFavorites] = useState<string[]>(() => {
-    const saved = localStorage.getItem('grounding-favorites');
-    return saved ? JSON.parse(saved) : [];
+  const [favorites, setFavorites] = useState<string[]>(readFavorites);
+  const [lastUsed, setLastUsed] = useState<string | null>(() => {
+    try {
+      return localStorage.getItem(LAST_USED_KEY);
+    } catch {
+      return null;
+    }
   });
-  const [lastUsed, setLastUsed] = useState<string | null>(localStorage.getItem('grounding-last-used'));
+  const dialogRef = useRef<HTMLDivElement>(null);
+  const closeButtonRef = useRef<HTMLButtonElement>(null);
+  const searchInputRef = useRef<HTMLInputElement>(null);
+  const previouslyFocusedRef = useRef<HTMLElement | null>(null);
+
+  // Filters and the open tool live in the URL so Home's shortcuts, the check-in
+  // suggestions and the browser back button all describe the same state.
+  const searchQuery = searchParams.get("q") ?? "";
+  const rawCategory = searchParams.get("category");
+  const categoryFilter = categories.includes(rawCategory as (typeof categories)[number])
+    ? (rawCategory as string)
+    : "All";
+  const rawIntensity = searchParams.get("intensity");
+  const intensityFilter = intensities.includes(rawIntensity as (typeof intensities)[number])
+    ? (rawIntensity as string)
+    : "All";
+  const isPanicMode = searchParams.get("panic") === "true";
+  const activeTool = getToolById(searchParams.get("tool"));
+
+  const updateParams = useCallback(
+    (updates: Record<string, string | null>, replace = true) => {
+      setSearchParams(
+        (prev) => {
+          const next = new URLSearchParams(prev);
+          Object.entries(updates).forEach(([key, value]) => {
+            if (value === null || value === "" || value === "All") next.delete(key);
+            else next.set(key, value);
+          });
+          return next;
+        },
+        { replace },
+      );
+    },
+    [setSearchParams],
+  );
+
+  const closeTool = useCallback(() => {
+    updateParams({ tool: null });
+  }, [updateParams]);
 
   useEffect(() => {
-    localStorage.setItem('grounding-favorites', JSON.stringify(favorites));
+    try {
+      localStorage.setItem(FAVORITES_KEY, JSON.stringify(favorites));
+    } catch {
+      // Favorites still work for this visit if storage is unavailable.
+    }
   }, [favorites]);
 
   useEffect(() => {
-    window.dispatchEvent(new CustomEvent('set-calm-level', { detail: calmLevel }));
+    window.dispatchEvent(new CustomEvent("set-calm-level", { detail: calmLevel }));
   }, [calmLevel]);
 
-  const toggleFavorite = (e: React.MouseEvent, id: string) => {
-    e.stopPropagation();
-    setFavorites(prev => prev.includes(id) ? prev.filter(f => f !== id) : [...prev, id]);
+  // Dialog focus and keyboard handling: Escape always closes, Tab stays inside.
+  useEffect(() => {
+    if (!activeTool) return;
+
+    previouslyFocusedRef.current = document.activeElement as HTMLElement | null;
+    closeButtonRef.current?.focus();
+    const previousOverflow = document.body.style.overflow;
+    document.body.style.overflow = "hidden";
+
+    const handleKeyDown = (event: KeyboardEvent) => {
+      if (event.key === "Escape") {
+        event.preventDefault();
+        closeTool();
+        return;
+      }
+      if (event.key !== "Tab" || !dialogRef.current) return;
+
+      const focusable = Array.from(
+        dialogRef.current.querySelectorAll<HTMLElement>(
+          'button:not([disabled]), [href], input:not([disabled]), [tabindex]:not([tabindex="-1"])',
+        ),
+      );
+      if (focusable.length === 0) return;
+      const first = focusable[0];
+      const last = focusable[focusable.length - 1];
+      if (event.shiftKey && document.activeElement === first) {
+        event.preventDefault();
+        last.focus();
+      } else if (!event.shiftKey && document.activeElement === last) {
+        event.preventDefault();
+        first.focus();
+      }
+    };
+
+    window.addEventListener("keydown", handleKeyDown);
+    return () => {
+      document.body.style.overflow = previousOverflow;
+      window.removeEventListener("keydown", handleKeyDown);
+      previouslyFocusedRef.current?.focus();
+    };
+  }, [activeTool, closeTool]);
+
+  const toggleFavorite = (event: React.MouseEvent, id: string) => {
+    event.stopPropagation();
+    setFavorites((prev) =>
+      prev.includes(id) ? prev.filter((favorite) => favorite !== id) : [...prev, id],
+    );
   };
 
-  const handleToolClick = (tool: typeof tools[0]) => {
-    setActiveTool(tool);
-    setLastUsed(tool.id);
-    localStorage.setItem('grounding-last-used', tool.id);
+  const handleToolClick = (id: string) => {
+    setLastUsed(id);
+    try {
+      localStorage.setItem(LAST_USED_KEY, id);
+    } catch {
+      // Recent tool still works for this visit if storage is unavailable.
+    }
+    updateParams({ tool: id });
   };
 
-  const filteredTools = useMemo(() => {
-    return tools
-      .filter(tool => {
-        const matchesSearch = tool.title.toLowerCase().includes(searchQuery.toLowerCase()) || 
-                             tool.description.toLowerCase().includes(searchQuery.toLowerCase());
-        const matchesCategory = categoryFilter === 'All' ? true : tool.type === categoryFilter;
-        const matchesPanic = isPanicMode ? tool.panic === true : true;
-        return matchesSearch && matchesCategory && matchesPanic;
-      })
-      .sort((a, b) => {
-        const aFav = favorites.includes(a.id);
-        const bFav = favorites.includes(b.id);
-        if (aFav && !bFav) return -1;
-        if (!aFav && bFav) return 1;
-        return 0;
-      });
-  }, [searchQuery, categoryFilter, isPanicMode, favorites]);
+  const filteredTools = useMemo(
+    () =>
+      tools.filter((tool) => {
+        const query = searchQuery.trim().toLowerCase();
+        const matchesSearch =
+          !query ||
+          tool.title.toLowerCase().includes(query) ||
+          tool.description.toLowerCase().includes(query);
+        const matchesCategory = categoryFilter === "All" || tool.type === categoryFilter;
+        const matchesIntensity = intensityFilter === "All" || tool.intensity === intensityFilter;
+        const matchesPanic = !isPanicMode || ("panic" in tool && tool.panic === true);
+        return matchesSearch && matchesCategory && matchesIntensity && matchesPanic;
+      }),
+    [searchQuery, categoryFilter, intensityFilter, isPanicMode],
+  );
+
+  const hasFilters = Boolean(
+    searchQuery || categoryFilter !== "All" || intensityFilter !== "All" || isPanicMode,
+  );
+  const clearFilters = () => updateParams({ q: null, category: null, intensity: null, panic: null });
 
   return (
     <div className="min-h-screen flex flex-col p-4 md:p-12 relative overflow-hidden">
       <StormBackground calmLevel={calmLevel} />
-      
+
       <header className="z-10 flex flex-col items-center mb-8 md:mb-12 max-w-6xl mx-auto w-full gap-6 md:gap-8">
         <div className="flex items-center justify-between w-full">
           <Button
             variant="ghost"
-            onClick={() => navigate('/')}
+            onClick={() => navigate("/")}
             className="text-white/40 hover:text-white hover:bg-white/10 rounded-full px-4 md:px-6 h-10 md:h-12 font-bold uppercase tracking-widest text-[10px]"
           >
-            <ChevronLeft className="mr-1 md:mr-2 h-4 w-4" /> Home
+            <ChevronLeft className="mr-1 md:mr-2 h-4 w-4" /> Back
           </Button>
           <h1 className="text-2xl md:text-4xl font-black text-white tracking-tighter uppercase">Toolbox</h1>
-          <div className="w-10 md:w-24" />
+          <div className="w-16 md:w-24" />
         </div>
 
-        <div className="flex flex-col w-full gap-6">
+        <div className="flex flex-col w-full gap-5">
           <div className="flex flex-col md:flex-row items-center gap-4 w-full">
             <div className="relative w-full flex-1">
-              <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-white/20" />
-              <Input 
-                placeholder="Search tools..." 
+              <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-white/20" aria-hidden="true" />
+              <Input
+                ref={searchInputRef}
+                type="search"
+                aria-label="Search tools"
+                placeholder="Search tools..."
                 value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
+                onChange={(event) => updateParams({ q: event.target.value })}
                 className="bg-white/5 border-white/10 rounded-full pl-12 pr-12 h-14 text-white placeholder:text-white/20 focus:ring-sky-500/50"
               />
+              {searchQuery && (
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  aria-label="Clear search"
+                  onClick={() => {
+                    updateParams({ q: null });
+                    searchInputRef.current?.focus();
+                  }}
+                  className="absolute right-2 top-1/2 -translate-y-1/2 text-white/40 hover:text-white rounded-full w-10 h-10"
+                >
+                  <X className="h-4 w-4" />
+                </Button>
+              )}
             </div>
-            
-            <Button 
-              onClick={() => setIsPanicMode(!isPanicMode)}
-              className={`w-full md:w-auto h-14 rounded-full px-8 font-black uppercase tracking-widest text-[10px] transition-all duration-500 ${isPanicMode ? 'bg-rose-500 text-white shadow-[0_0_30px_rgba(244,63,94,0.4)]' : 'bg-white/5 border border-white/10 text-rose-400 hover:bg-rose-500/10'}`}
+
+            <Button
+              onClick={() => updateParams({ panic: isPanicMode ? null : "true" })}
+              aria-pressed={isPanicMode}
+              className={`w-full md:w-auto h-14 rounded-full px-8 font-black uppercase tracking-widest text-[10px] transition-all duration-500 ${
+                isPanicMode
+                  ? "bg-rose-500 text-white shadow-[0_0_30px_rgba(244,63,94,0.4)]"
+                  : "bg-white/5 border border-white/10 text-rose-400 hover:bg-rose-500/10"
+              }`}
             >
-              <AlertCircle className={`mr-2 h-4 w-4 ${isPanicMode ? 'animate-pulse' : ''}`} />
-              {isPanicMode ? 'Panic Mode Active' : 'Panic Mode'}
+              <AlertCircle className={`mr-2 h-4 w-4 ${isPanicMode ? "animate-pulse" : ""}`} aria-hidden="true" />
+              {isPanicMode ? "Panic mode on" : "Panic mode"}
             </Button>
           </div>
 
-          <div className="flex bg-white/5 p-1.5 rounded-full border border-white/10 w-full overflow-x-auto no-scrollbar">
-            {categories.map((cat) => (
-              <Button
-                key={cat}
-                variant="ghost"
-                size="sm"
-                onClick={() => setCategoryFilter(cat)}
-                className={`flex-1 rounded-full px-6 h-11 text-[9px] md:text-[10px] font-bold uppercase tracking-widest transition-all ${categoryFilter === cat ? 'bg-white text-slate-950 shadow-lg' : 'text-white/40 hover:text-white'}`}
-              >
-                {cat}
-              </Button>
-            ))}
+          <div className="flex flex-col md:flex-row gap-3">
+            <div
+              className="flex bg-white/5 p-1.5 rounded-full border border-white/10 w-full overflow-x-auto no-scrollbar"
+              role="group"
+              aria-label="Filter by type"
+            >
+              {categories.map((category) => (
+                <Button
+                  key={category}
+                  variant="ghost"
+                  size="sm"
+                  aria-pressed={categoryFilter === category}
+                  onClick={() => updateParams({ category: category === "All" ? null : category })}
+                  className={`shrink-0 rounded-full px-6 h-11 text-[9px] md:text-[10px] font-bold uppercase tracking-widest transition-all ${
+                    categoryFilter === category
+                      ? "bg-white text-slate-950 shadow-lg"
+                      : "text-white/40 hover:text-white"
+                  }`}
+                >
+                  {category}
+                </Button>
+              ))}
+            </div>
+
+            <div
+              className="flex bg-white/5 p-1.5 rounded-full border border-white/10 md:w-auto overflow-x-auto no-scrollbar"
+              role="group"
+              aria-label="Filter by intensity"
+            >
+              {intensities.map((intensity) => (
+                <Button
+                  key={intensity}
+                  variant="ghost"
+                  size="sm"
+                  aria-pressed={intensityFilter === intensity}
+                  onClick={() => updateParams({ intensity: intensity === "All" ? null : intensity })}
+                  className={`shrink-0 rounded-full px-5 h-11 text-[9px] md:text-[10px] font-bold uppercase tracking-widest transition-all ${
+                    intensityFilter === intensity
+                      ? "bg-sky-400 text-slate-950 shadow-lg"
+                      : "text-white/40 hover:text-white"
+                  }`}
+                >
+                  {intensity}
+                </Button>
+              ))}
+            </div>
           </div>
         </div>
       </header>
 
-      <main className="z-10 flex-1 max-w-6xl mx-auto w-full space-y-8 md:space-y-12">
-        <div className="bg-white/[0.03] backdrop-blur-xl border border-white/10 p-6 md:p-8 rounded-[40px] flex flex-col md:flex-row items-center justify-between gap-6 md:gap-8">
-          <div className="flex items-center space-x-4 w-full md:w-auto">
-            <div className="w-10 h-10 md:w-12 md:h-12 bg-white/5 rounded-2xl flex items-center justify-center text-white/40">
-              <SlidersHorizontal className="w-5 h-5 md:w-6 md:h-6" />
+      <main className="z-10 flex-1 max-w-6xl mx-auto w-full space-y-6 md:space-y-8">
+        <div className="bg-white/[0.03] backdrop-blur-xl border border-white/10 p-6 md:p-8 rounded-[40px] flex flex-col lg:flex-row items-center justify-between gap-6 md:gap-8">
+          <div className="flex items-center space-x-4 w-full lg:w-auto">
+            <div className="w-10 h-10 md:w-12 md:h-12 bg-white/5 rounded-2xl flex items-center justify-center text-white/40 shrink-0">
+              <SlidersHorizontal className="w-5 h-5 md:w-6 md:h-6" aria-hidden="true" />
             </div>
             <div>
-              <h4 className="text-[10px] md:text-sm font-bold text-white uppercase tracking-widest">Environment</h4>
-              <p className="text-[9px] md:text-xs text-white/40">Adjust the storm intensity.</p>
+              <h4 className="text-[10px] md:text-sm font-bold text-white uppercase tracking-widest">
+                Set the scene
+              </h4>
+              <p className="text-[9px] md:text-xs text-white/40">
+                The background follows the storm. Quiet visuals removes rain, flashes and movement.
+              </p>
             </div>
           </div>
-          <div className="flex-1 max-w-md w-full flex items-center space-x-4 md:space-x-6">
-            <span className="text-[8px] md:text-[10px] font-bold text-white/20 uppercase tracking-widest">Stormy</span>
-            <Slider 
-              value={[calmLevel]} 
-              onValueChange={(v) => setCalmLevel(v[0])} 
-              max={100} 
-              step={1}
-              className="cursor-pointer"
-            />
-            <span className="text-[8px] md:text-[10px] font-bold text-white/20 uppercase tracking-widest">Clear</span>
+          <div className="flex flex-col sm:flex-row items-center gap-4 md:gap-6 w-full lg:w-auto">
+            <div className="flex-1 min-w-[180px] max-w-md flex items-center space-x-4 md:space-x-6">
+              <span className="text-[8px] md:text-[10px] font-bold text-white/20 uppercase tracking-widest">Stormy</span>
+              <Slider
+                aria-label="Background intensity"
+                value={[calmLevel]}
+                onValueChange={(value) => setCalmLevel(value[0])}
+                max={100}
+                step={1}
+                className="cursor-pointer"
+              />
+              <span className="text-[8px] md:text-[10px] font-bold text-white/20 uppercase tracking-widest">Clear</span>
+            </div>
+            <QuietModeToggle compact />
           </div>
         </div>
 
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 md:gap-8">
-          <AnimatePresence mode="popLayout">
-            {filteredTools.map((tool) => (
-              <motion.div
-                key={tool.id}
-                layout
-                initial={{ opacity: 0, scale: 0.9 }}
-                animate={{ opacity: 1, scale: 1 }}
-                exit={{ opacity: 0, scale: 0.9 }}
-                whileHover={{ scale: 1.02, y: -5 }}
-                transition={{ type: "spring", stiffness: 300, damping: 20 }}
-              >
-                <Card 
-                  className={`bg-white/[0.03] backdrop-blur-2xl border-white/10 text-white hover:bg-white/[0.08] transition-all duration-500 cursor-pointer group h-full overflow-hidden rounded-[48px] active:scale-[0.98] relative ${lastUsed === tool.id ? 'ring-2 ring-sky-500/20' : ''}`}
-                  onClick={() => handleToolClick(tool)}
-                >
-                  <CardContent className="p-8 md:p-10 flex flex-col h-full">
-                    <div className="flex justify-between items-start mb-6 md:mb-8">
-                      <div className={`w-14 h-14 md:w-16 md:h-16 ${tool.bg} rounded-[24px] flex items-center justify-center ${tool.color} group-hover:scale-110 group-hover:rotate-3 transition-all duration-500`}>
-                        <tool.icon className="w-7 h-7 md:w-8 md:h-8" />
-                      </div>
-                      <div className="flex items-center space-x-2">
-                        <Badge variant="outline" className="bg-white/5 border-white/10 text-[8px] font-bold uppercase tracking-widest px-2 py-0.5 flex items-center">
-                          <Clock className="w-3 h-3 mr-1" /> {tool.duration}
-                        </Badge>
-                        <Button
-                          variant="ghost"
-                          size="icon"
-                          onClick={(e) => toggleFavorite(e, tool.id)}
-                          className={`w-8 h-8 rounded-full transition-colors ${favorites.includes(tool.id) ? 'text-amber-400 bg-amber-400/10' : 'text-white/20 hover:text-white/40'}`}
-                        >
-                          <Star className={`w-4 h-4 ${favorites.includes(tool.id) ? 'fill-current' : ''}`} />
-                        </Button>
-                      </div>
-                    </div>
-                    <div className="space-y-3 md:space-y-4">
-                      <div className="flex items-center justify-between">
-                        <h3 className="text-xl md:text-2xl font-bold tracking-tight">{tool.title}</h3>
-                        <Badge variant="outline" className="bg-white/5 border-white/10 text-[8px] font-bold uppercase tracking-widest px-2 py-0.5">
-                          {tool.type}
-                        </Badge>
-                      </div>
-                      <p className="text-white/40 text-xs md:text-sm leading-relaxed font-light">{tool.description}</p>
-                    </div>
-                  </CardContent>
-                </Card>
-              </motion.div>
-            ))}
-          </AnimatePresence>
+        <div className="flex flex-wrap items-center justify-between gap-3 px-2">
+          <p className="text-[10px] font-bold uppercase tracking-widest text-white/40" aria-live="polite">
+            Showing {filteredTools.length} of {tools.length} tools
+          </p>
+          {hasFilters && (
+            <Button
+              variant="link"
+              onClick={clearFilters}
+              className="text-sky-400/70 text-[10px] font-bold uppercase tracking-widest hover:text-sky-300 h-auto p-0"
+            >
+              Clear all filters
+            </Button>
+          )}
         </div>
+
+        {isPanicMode && (
+          <div className="bg-rose-500/10 border border-rose-500/20 rounded-3xl px-6 py-4 flex flex-wrap items-center justify-between gap-3 text-xs text-rose-100/70">
+            <span>Showing only short tools for acute panic. You can switch this off at any time.</span>
+            <a href="tel:131114" className="font-bold underline underline-offset-4 hover:text-white">
+              Need to talk? Call Lifeline 13 11 14
+            </a>
+          </div>
+        )}
+
+        {filteredTools.length === 0 ? (
+          <div className="rounded-[40px] border border-white/10 bg-white/[0.03] p-12 text-center space-y-5">
+            <div className="space-y-2">
+              <h2 className="text-2xl font-bold text-white">No tools match those filters</h2>
+              <p className="text-sm text-white/40">Nothing is wrong — try clearing the filters.</p>
+            </div>
+            <Button
+              onClick={clearFilters}
+              className="rounded-full bg-white text-slate-950 font-bold uppercase tracking-widest text-xs px-8 h-12"
+            >
+              Show all tools
+            </Button>
+          </div>
+        ) : (
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 md:gap-8">
+            <AnimatePresence mode="popLayout">
+              {filteredTools.map((tool) => (
+                <motion.div
+                  key={tool.id}
+                  layout
+                  initial={{ opacity: 0, scale: 0.9 }}
+                  animate={{ opacity: 1, scale: 1 }}
+                  exit={{ opacity: 0, scale: 0.9 }}
+                  whileHover={{ scale: 1.02, y: -5 }}
+                  transition={{ type: "spring", stiffness: 300, damping: 20 }}
+                >
+                  <Card
+                    role="button"
+                    tabIndex={0}
+                    aria-label={`Open ${tool.title}`}
+                    className={`bg-white/[0.03] backdrop-blur-2xl border-white/10 text-white hover:bg-white/[0.08] transition-all duration-500 cursor-pointer group h-full overflow-hidden rounded-[48px] active:scale-[0.98] relative ${
+                      lastUsed === tool.id ? "ring-2 ring-sky-500/20" : ""
+                    }`}
+                    onClick={() => handleToolClick(tool.id)}
+                    onKeyDown={(event) => {
+                      if (event.key === "Enter" || event.key === " ") {
+                        event.preventDefault();
+                        handleToolClick(tool.id);
+                      }
+                    }}
+                  >
+                    <CardContent className="p-8 md:p-10 flex flex-col h-full">
+                      <div className="flex justify-between items-start mb-6 md:mb-8">
+                        <div
+                          className={`w-14 h-14 md:w-16 md:h-16 ${tool.bg} rounded-[24px] flex items-center justify-center ${tool.color} group-hover:scale-110 group-hover:rotate-3 transition-all duration-500`}
+                        >
+                          <tool.icon className="w-7 h-7 md:w-8 md:h-8" aria-hidden="true" />
+                        </div>
+                        <div className="flex items-center space-x-2">
+                          <Badge
+                            variant="outline"
+                            className="bg-white/5 border-white/10 text-[8px] font-bold uppercase tracking-widest px-2 py-0.5 flex items-center"
+                          >
+                            <Clock className="w-3 h-3 mr-1" aria-hidden="true" /> {tool.duration}
+                          </Badge>
+                          <Button
+                            variant="ghost"
+                            size="icon"
+                            aria-label={favorites.includes(tool.id) ? `Remove ${tool.title} from favorites` : `Add ${tool.title} to favorites`}
+                            aria-pressed={favorites.includes(tool.id)}
+                            onClick={(event) => toggleFavorite(event, tool.id)}
+                            className={`w-8 h-8 rounded-full transition-colors ${
+                              favorites.includes(tool.id)
+                                ? "text-amber-400 bg-amber-400/10"
+                                : "text-white/20 hover:text-white/40"
+                            }`}
+                          >
+                            <Star className={`w-4 h-4 ${favorites.includes(tool.id) ? "fill-current" : ""}`} aria-hidden="true" />
+                          </Button>
+                        </div>
+                      </div>
+                      <div className="space-y-3 md:space-y-4">
+                        <div className="flex items-center justify-between gap-2">
+                          <h3 className="text-xl md:text-2xl font-bold tracking-tight">{tool.title}</h3>
+                          <Badge
+                            variant="outline"
+                            className="bg-white/5 border-white/10 text-[8px] font-bold uppercase tracking-widest px-2 py-0.5 shrink-0"
+                          >
+                            {tool.type}
+                          </Badge>
+                        </div>
+                        <p className="text-white/40 text-xs md:text-sm leading-relaxed font-light">{tool.description}</p>
+                        <p className="text-[9px] font-bold uppercase tracking-widest text-white/20">
+                          {tool.intensity} intensity
+                        </p>
+                      </div>
+                    </CardContent>
+                  </Card>
+                </motion.div>
+              ))}
+            </AnimatePresence>
+          </div>
+        )}
       </main>
 
       <AnimatePresence>
@@ -447,9 +446,16 @@ const Tools = () => {
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
+            onClick={(event) => {
+              if (event.target === event.currentTarget) closeTool();
+            }}
             className="fixed inset-0 z-[100] flex items-center justify-center p-4 md:p-6 bg-slate-950/95 backdrop-blur-2xl"
           >
             <motion.div
+              ref={dialogRef}
+              role="dialog"
+              aria-modal="true"
+              aria-labelledby="tool-dialog-title"
               initial={{ scale: 0.9, y: 40, opacity: 0 }}
               animate={{ scale: 1, y: 0, opacity: 1 }}
               exit={{ scale: 0.9, y: 40, opacity: 0 }}
@@ -457,12 +463,14 @@ const Tools = () => {
               className="w-full max-w-2xl bg-white/[0.02] border border-white/10 rounded-[56px] shadow-2xl overflow-hidden relative backdrop-blur-3xl max-h-[90vh] overflow-y-auto no-scrollbar"
             >
               <Button
+                ref={closeButtonRef}
                 variant="ghost"
                 size="icon"
-                onClick={() => setActiveTool(null)}
+                aria-label="Close tool"
+                onClick={closeTool}
                 className="absolute top-6 right-6 md:top-8 md:right-8 text-white/20 hover:text-white hover:bg-white/10 z-10 rounded-full w-10 h-10 md:w-12 md:h-12"
               >
-                <X className="h-5 w-5 md:h-6 md:w-6" />
+                <X className="h-5 w-5 md:h-6 md:w-6" aria-hidden="true" />
               </Button>
 
               <div className="p-8 md:p-20 flex flex-col items-center space-y-8 md:space-y-12">
@@ -475,32 +483,42 @@ const Tools = () => {
                       {activeTool.duration}
                     </Badge>
                   </div>
-                  <h2 className="text-3xl md:text-5xl font-black text-white tracking-tighter uppercase">{activeTool.title}</h2>
+                  <h2 id="tool-dialog-title" className="text-3xl md:text-5xl font-black text-white tracking-tighter uppercase">
+                    {activeTool.title}
+                  </h2>
                   <p className="text-white/40 text-base md:text-lg font-light max-w-md mx-auto">{activeTool.description}</p>
                 </div>
 
-                <div className="w-full">
-                  {activeTool.component}
+                <div className="w-full">{activeTool.component}</div>
+
+                <div className="w-full bg-white/5 border border-white/10 rounded-[32px] p-6 flex items-start space-x-4">
+                  <div className="w-10 h-10 bg-sky-500/10 rounded-xl flex items-center justify-center text-sky-400 shrink-0">
+                    <Wind className="w-5 h-5" aria-hidden="true" />
+                  </div>
+                  <div className="space-y-1">
+                    <h4 className="text-[10px] font-black uppercase tracking-widest text-white/40">Why it works</h4>
+                    <p className="text-xs text-white/60 leading-relaxed italic">{activeTool.science}</p>
+                  </div>
                 </div>
 
-                {activeTool.science && (
-                  <div className="w-full bg-white/5 border border-white/10 rounded-[32px] p-6 flex items-start space-x-4">
-                    <div className="w-10 h-10 bg-sky-500/10 rounded-xl flex items-center justify-center text-sky-400 shrink-0">
-                      <Info className="w-5 h-5" />
-                    </div>
-                    <div className="space-y-1">
-                      <h4 className="text-[10px] font-black uppercase tracking-widest text-white/40">Why it works</h4>
-                      <p className="text-xs text-white/60 leading-relaxed italic">{activeTool.science}</p>
-                    </div>
-                  </div>
-                )}
-
-                <Button
-                  onClick={() => setActiveTool(null)}
-                  className="bg-white text-slate-950 hover:bg-sky-100 px-12 md:px-20 h-16 rounded-full font-black text-base md:text-lg shadow-2xl shadow-white/10 uppercase tracking-widest active:scale-95 transition-transform"
-                >
-                  I feel better
-                </Button>
+                <div className="flex flex-col items-center gap-4 w-full">
+                  <Button
+                    onClick={closeTool}
+                    className="bg-white text-slate-950 hover:bg-sky-100 px-12 md:px-20 h-16 rounded-full font-black text-base md:text-lg shadow-2xl shadow-white/10 uppercase tracking-widest active:scale-95 transition-transform"
+                  >
+                    Done for now
+                  </Button>
+                  <Button
+                    variant="link"
+                    onClick={() => {
+                      closeTool();
+                      window.setTimeout(() => searchInputRef.current?.focus(), 0);
+                    }}
+                    className="text-white/40 hover:text-white text-[10px] font-bold uppercase tracking-widest h-auto p-0"
+                  >
+                    Didn't help? Try another tool
+                  </Button>
+                </div>
               </div>
             </motion.div>
           </motion.div>

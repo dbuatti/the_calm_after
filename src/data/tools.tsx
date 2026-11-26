@@ -1,0 +1,278 @@
+import React from "react";
+import {
+  Wind,
+  Droplets,
+  Eye,
+  ListChecks,
+  Compass,
+  Activity,
+  Sparkles,
+  Footprints,
+  Brain,
+  Accessibility,
+  MapPin,
+  Anchor,
+  Move,
+  Heart,
+} from "lucide-react";
+import BalloonBreathing from "@/components/grounding/BalloonBreathing";
+import ColdWaterExercise from "@/components/grounding/ColdWaterExercise";
+import NarrationTool from "@/components/grounding/NarrationTool";
+import OpenAwareness from "@/components/grounding/OpenAwareness";
+import SelfAwarenessPITCHES from "@/components/grounding/SelfAwarenessPITCHES";
+import SensoryGrounding from "@/components/grounding/SensoryGrounding";
+import EarthingGuide from "@/components/grounding/EarthingGuide";
+import MentalGym from "@/components/grounding/MentalGym";
+import SoothingSanctuary from "@/components/grounding/SoothingSanctuary";
+import BodyScanActive from "@/components/grounding/BodyScanActive";
+import CognitiveReorientation from "@/components/grounding/CognitiveReorientation";
+import SensoryAnchors from "@/components/grounding/SensoryAnchors";
+import BreathingTechniques from "@/components/grounding/BreathingTechniques";
+import MindfulMovement from "@/components/grounding/MindfulMovement";
+import SqueezeHug from "@/components/grounding/SqueezeHug";
+import ButterflyHug from "@/components/grounding/ButterflyHug";
+import ColorSpotting from "@/components/grounding/ColorSpotting";
+
+/**
+ * Single source of truth for the toolbox and the deep links on the home page.
+ * Order is stable on purpose: starring a tool must never move its card.
+ */
+export const tools = [
+  {
+    id: "butterfly-hug",
+    title: "Butterfly Hug",
+    icon: Sparkles,
+    color: "text-rose-400",
+    bg: "bg-rose-500/10",
+    intensity: "Low",
+    duration: "2m",
+    type: "Physical",
+    panic: true,
+    description: "A rhythmic self-tapping technique to soothe the nervous system.",
+    science: "Bilateral stimulation helps process distressing emotions and reduces physiological arousal.",
+    component: <ButterflyHug />,
+  },
+  {
+    id: "color-spotting",
+    title: "Color Spotting",
+    icon: Eye,
+    color: "text-emerald-400",
+    bg: "bg-emerald-500/10",
+    intensity: "Low",
+    duration: "3m",
+    type: "Sensory",
+    panic: true,
+    description: "A simple visual search game to pull your focus into the room.",
+    science: "Engages the visual cortex and requires external focus, breaking internal panic loops.",
+    component: <ColorSpotting />,
+  },
+  {
+    id: "squeeze-hug",
+    title: "Squeeze Hug",
+    icon: Heart,
+    color: "text-rose-400",
+    bg: "bg-rose-500/10",
+    intensity: "Low",
+    duration: "2m",
+    type: "Physical",
+    panic: true,
+    description: "A self-soothing technique involving a firm hug to provide immediate comfort.",
+    science: "Provides proprioceptive input that signals safety to the nervous system.",
+    component: <SqueezeHug />,
+  },
+  {
+    id: "mindful-move",
+    title: "Mindful Movement",
+    icon: Move,
+    color: "text-sky-400",
+    bg: "bg-sky-500/10",
+    intensity: "Low",
+    duration: "3m",
+    type: "Physical",
+    description: "Synchronize your breath with slow, deliberate arm movements.",
+    science: "Combines physical action with breath control to pull focus back from distressing thoughts.",
+    component: <MindfulMovement />,
+  },
+  {
+    id: "breathing-tech",
+    title: "Sensory Breathing",
+    icon: Sparkles,
+    color: "text-indigo-400",
+    bg: "bg-indigo-500/10",
+    intensity: "Low",
+    duration: "4m",
+    type: "Breath",
+    description: "Advanced techniques like Lion's Breath and Humming Bee for deep sensory regulation.",
+    science: "Stimulates the vagus nerve to switch the body from \"fight or flight\" to \"rest and digest\" mode.",
+    component: <BreathingTechniques />,
+  },
+  {
+    id: "reorientation",
+    title: "Cognitive Reorientation",
+    icon: MapPin,
+    color: "text-sky-400",
+    bg: "bg-sky-500/10",
+    intensity: "Medium",
+    duration: "2m",
+    type: "Mental",
+    panic: true,
+    description: "Anchor yourself in time and place by answering 7 key re-orienting questions.",
+    science: "Engages the prefrontal cortex to override the emotional centers of the brain.",
+    component: <CognitiveReorientation />,
+  },
+  {
+    id: "anchors",
+    title: "Sensory Anchors",
+    icon: Anchor,
+    color: "text-emerald-400",
+    bg: "bg-emerald-500/10",
+    intensity: "Low",
+    duration: "3m",
+    type: "Sensory",
+    description: "Use physical objects like cool cloths or special items to ground your senses.",
+    science: "Tactile stimulation provides a concrete \"anchor\" that pulls focus away from internal distress.",
+    component: <SensoryAnchors />,
+  },
+  {
+    id: "mental-gym",
+    title: "Mental Gym",
+    icon: Brain,
+    color: "text-amber-400",
+    bg: "bg-amber-500/10",
+    intensity: "Medium",
+    duration: "3m",
+    type: "Mental",
+    description: "Cognitive distractions using categories, math, and reverse spelling.",
+    science: "Forces the brain to use logical processing power, leaving less room for emotional rumination.",
+    component: <MentalGym />,
+  },
+  {
+    id: "soothing",
+    title: "Soothing Sanctuary",
+    icon: Heart,
+    color: "text-rose-400",
+    bg: "bg-rose-500/10",
+    intensity: "Low",
+    duration: "5m",
+    type: "Soothing",
+    description: "Self-kindness affirmations and visualization of loved ones.",
+    science: "Activates the care-seeking system, releasing oxytocin to counteract cortisol.",
+    component: <SoothingSanctuary />,
+  },
+  {
+    id: "active-scan",
+    title: "Active Body Scan",
+    icon: Accessibility,
+    color: "text-emerald-400",
+    bg: "bg-emerald-500/10",
+    intensity: "Medium",
+    duration: "4m",
+    type: "Physical",
+    description: "Physical grounding through stomping, clenching, and stretching.",
+    science: "Proprioceptive input is a powerful signal of safety to the brain.",
+    component: <BodyScanActive />,
+  },
+  {
+    id: "earthing",
+    title: "Physical Earthing",
+    icon: Footprints,
+    color: "text-emerald-400",
+    bg: "bg-emerald-500/10",
+    intensity: "Low",
+    duration: "10m",
+    type: "Physical",
+    description: "Connect directly with the Earth to reduce inflammation and stress.",
+    science: "Direct contact with the Earth allows for an exchange of electrons to regulate circadian rhythms.",
+    component: <EarthingGuide />,
+  },
+  {
+    id: "balloon",
+    title: "Balloon Breathing",
+    icon: Wind,
+    color: "text-sky-400",
+    bg: "bg-sky-500/10",
+    intensity: "Low",
+    duration: "3m",
+    type: "Breath",
+    panic: true,
+    description: "Focus on the sensory details of air moving through your body.",
+    science: "Diaphragmatic breathing lowers blood pressure and reduces stress hormones.",
+    component: <BalloonBreathing />,
+  },
+  {
+    id: "pitches",
+    title: "PITCHES Check",
+    icon: Activity,
+    color: "text-purple-400",
+    bg: "bg-purple-500/10",
+    intensity: "Medium",
+    duration: "5m",
+    type: "Mental",
+    description: "A comprehensive self-awareness scan for pain, tension, and safety.",
+    science: "Interoception helps identify physical needs that may be masquerading as anxiety.",
+    component: <SelfAwarenessPITCHES />,
+  },
+  {
+    id: "narration",
+    title: "Narration Tool",
+    icon: ListChecks,
+    color: "text-teal-400",
+    bg: "bg-teal-500/10",
+    intensity: "Medium",
+    duration: "2m",
+    type: "Mental",
+    description: "Engage your logical mind by narrating actions or stating problems.",
+    science: "Verbalizing actions moves the brain from \"experiencing\" to \"observing\".",
+    component: <NarrationTool />,
+  },
+  {
+    id: "open",
+    title: "Open Awareness",
+    icon: Compass,
+    color: "text-amber-400",
+    bg: "bg-amber-500/10",
+    intensity: "Low",
+    duration: "3m",
+    type: "Sensory",
+    description: "Describe your environment in detail to anchor yourself in the present.",
+    science: "Externalizing focus breaks the loop of internal panic by forcing visual processing.",
+    component: <OpenAwareness />,
+  },
+  {
+    id: "dive",
+    title: "Dive Reflex",
+    icon: Droplets,
+    color: "text-blue-400",
+    bg: "bg-blue-500/10",
+    intensity: "High",
+    duration: "1m",
+    type: "Physical",
+    description: "Use cold water to activate your nervous system's \"calm\" switch.",
+    science: "Triggers the Mammalian Dive Reflex, immediately slowing the heart rate.",
+    component: <ColdWaterExercise />,
+  },
+  {
+    id: "sensory",
+    title: "5-4-3-2-1 Technique",
+    icon: Eye,
+    color: "text-rose-400",
+    bg: "bg-rose-500/10",
+    intensity: "Medium",
+    duration: "5m",
+    type: "Sensory",
+    panic: true,
+    description: "Engage all your senses to return to the present moment.",
+    science: "Systematically engages all five senses to ground the individual in reality.",
+    component: <SensoryGrounding />,
+  },
+] as const;
+
+export type GroundingTool = (typeof tools)[number];
+
+export const categories = ["All", "Physical", "Mental", "Sensory", "Breath", "Soothing"] as const;
+export const intensities = ["All", "Low", "Medium", "High"] as const;
+
+export const getToolById = (id: string | null | undefined): GroundingTool | undefined =>
+  tools.find((tool) => tool.id === id);
+
+export const toolHref = (id: string) => `/tools?tool=${encodeURIComponent(id)}`;

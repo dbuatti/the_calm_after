@@ -1,11 +1,22 @@
 "use client";
 
-import React, { useState, useEffect } from 'react';
+import React, { useCallback, useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import { ChevronRight, ChevronLeft, Home, CheckCircle2, Clock, RotateCcw, FastForward } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import { Progress } from '@/components/ui/progress';
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from '@/components/ui/alert-dialog';
+import { hasModifierKey, isDialogOpen, isTypingTarget } from '@/lib/keyboard';
 import StormBackground from '@/components/grounding/StormBackground';
 import BreathingGuide from '@/components/grounding/BreathingGuide';
 import SessionStep from '@/components/grounding/SessionStep';
@@ -63,10 +74,27 @@ const steps = [
   },
 ];
 
+const STEP_KEY = 'grounding-session-step';
+
+function persistStep(value: number | null) {
+  try {
+    if (value === null) localStorage.removeItem(STEP_KEY);
+    else localStorage.setItem(STEP_KEY, String(value));
+  } catch {
+    // Progress still applies for this visit if storage is unavailable.
+  }
+}
+
 const Session = () => {
   const [currentStep, setCurrentStep] = useState(() => {
-    const saved = localStorage.getItem('grounding-session-step');
-    return saved ? parseInt(saved, 10) : 0;
+    try {
+      const saved = Number(localStorage.getItem(STEP_KEY));
+      return Number.isFinite(saved) && saved >= 0 && saved < steps.length
+        ? Math.floor(saved)
+        : 0;
+    } catch {
+      return 0;
+    }
   });
   const navigate = useNavigate();
   
@@ -74,19 +102,19 @@ const Session = () => {
   const progress = ((currentStep + 1) / steps.length) * 100;
 
   useEffect(() => {
-    localStorage.setItem('grounding-session-step', currentStep.toString());
+    persistStep(currentStep);
     // Sync global calm level
     window.dispatchEvent(new CustomEvent('set-calm-level', { detail: step.calmLevel }));
   }, [currentStep, step.calmLevel]);
 
-  const nextStep = () => {
+  const nextStep = useCallback(() => {
     if (currentStep < steps.length - 1) {
       setCurrentStep(currentStep + 1);
     } else {
-      localStorage.removeItem('grounding-session-step');
+      persistStep(null);
       navigate('/');
     }
-  };
+  }, [currentStep, navigate]);
 
   const prevStep = () => {
     if (currentStep > 0) {
@@ -96,22 +124,34 @@ const Session = () => {
 
   const resetSession = () => {
     setCurrentStep(0);
-    localStorage.removeItem('grounding-session-step');
+    persistStep(0);
   };
 
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.code === 'Escape') {
+        // If a confirmation or exercise dialog owns Escape, let it close first.
+        if (isDialogOpen()) return;
+        navigate('/');
+        return;
+      }
+      // Never hijack typing, buttons inside an exercise, or another open dialog.
+      if (
+        hasModifierKey(e) ||
+        isTypingTarget(e.target) ||
+        isDialogOpen() ||
+        (e.target instanceof HTMLElement && e.target.closest('button, a[href]'))
+      ) {
+        return;
+      }
       if (e.code === 'Space' || e.code === 'Enter') {
         e.preventDefault();
         nextStep();
       }
-      if (e.code === 'Escape') {
-        navigate('/');
-      }
     };
     window.addEventListener('keydown', handleKeyDown);
     return () => window.removeEventListener('keydown', handleKeyDown);
-  }, [currentStep]);
+  }, [currentStep, navigate, nextStep]);
 
   return (
     <div className="min-h-screen flex flex-col items-center justify-center p-6 relative overflow-hidden">
@@ -122,13 +162,25 @@ const Session = () => {
           variant="ghost"
           size="icon"
           onClick={() => navigate('/')}
+          aria-label="Save and exit to home"
+          title="Save and exit"
           className="text-white/40 hover:text-white hover:bg-white/10 rounded-full w-12 h-12 transition-all"
         >
-          <Home className="h-5 w-5" />
+          <Home className="h-5 w-5" aria-hidden="true" />
         </Button>
-        
+
         <div className="flex-1 max-w-md mx-12 space-y-2">
-          <div className="relative h-1 w-full bg-white/5 rounded-full overflow-hidden">
+          <p className="text-center text-[10px] font-bold uppercase tracking-widest text-white/50" aria-live="polite">
+            Step {currentStep + 1} of {steps.length}: {step.title}
+          </p>
+          <div
+            className="relative h-1 w-full bg-white/5 rounded-full overflow-hidden"
+            role="progressbar"
+            aria-valuemin={0}
+            aria-valuemax={steps.length}
+            aria-valuenow={currentStep + 1}
+            aria-label="Session progress"
+          >
             <motion.div 
               className="absolute top-0 left-0 h-full bg-white"
               initial={{ width: 0 }}
@@ -150,19 +202,40 @@ const Session = () => {
           </div>
         </div>
         
-        <div className="flex items-center space-x-4">
-          <Button
-            variant="ghost"
-            size="icon"
-            onClick={resetSession}
-            className="text-white/20 hover:text-white/60 rounded-full w-10 h-10"
-            title="Reset Session"
-          >
-            <RotateCcw className="h-4 w-4" />
-          </Button>
-          <div className="text-white/40 text-xs font-black tabular-nums">
-            {currentStep + 1} / {steps.length}
+        <div className="flex flex-col items-end gap-1">
+          <div className="flex items-center space-x-4">
+            <AlertDialog>
+              <AlertDialogTrigger asChild>
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  className="text-white/20 hover:text-white/60 rounded-full w-10 h-10"
+                  aria-label="Start this session over"
+                  title="Start over"
+                >
+                  <RotateCcw className="h-4 w-4" aria-hidden="true" />
+                </Button>
+              </AlertDialogTrigger>
+              <AlertDialogContent className="bg-slate-950 text-white border-white/10 rounded-[40px]">
+                <AlertDialogHeader>
+                  <AlertDialogTitle>Start over?</AlertDialogTitle>
+                  <AlertDialogDescription className="text-white/50">
+                    This returns you to step 1. Your place is saved automatically if you leave instead.
+                  </AlertDialogDescription>
+                </AlertDialogHeader>
+                <AlertDialogFooter>
+                  <AlertDialogCancel className="rounded-full">Keep my place</AlertDialogCancel>
+                  <AlertDialogAction onClick={resetSession} className="rounded-full bg-white text-slate-950 hover:bg-sky-100">
+                    Start over
+                  </AlertDialogAction>
+                </AlertDialogFooter>
+              </AlertDialogContent>
+            </AlertDialog>
+            <div className="text-white/40 text-xs font-black tabular-nums">
+              {currentStep + 1} / {steps.length}
+            </div>
           </div>
+          <span className="text-[8px] font-bold uppercase tracking-widest text-white/20">Saved automatically</span>
         </div>
       </div>
 
@@ -212,9 +285,9 @@ const Session = () => {
               )}
 
               <div className="flex items-center space-x-4 text-white/20 text-[10px] font-bold uppercase tracking-[0.3em]">
-                <span>Space to Continue</span>
+                <span>Space / Enter to continue</span>
                 <span className="w-1 h-1 bg-white/10 rounded-full" />
-                <span>Esc to Exit</span>
+                <span>Esc saves &amp; exits</span>
               </div>
             </div>
           </SessionStep>
