@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useEffect, useRef, useState } from "react";
+import React, { useCallback, useRef, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import {
   X,
@@ -18,6 +18,7 @@ import {
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Slider } from "@/components/ui/slider";
+import { useDialogFocus } from "@/hooks/use-dialog-focus";
 
 interface MoodMeterProps {
   onSuggest: (intensity: string) => void;
@@ -49,27 +50,10 @@ const MoodMeter: React.FC<MoodMeterProps> = ({ onSuggest }) => {
     comfort: 50,
     clarity: 50,
   });
+  const dialogRef = useRef<HTMLDivElement>(null);
   const closeButtonRef = useRef<HTMLButtonElement>(null);
-  const previouslyFocusedRef = useRef<HTMLElement | null>(null);
-
-  useEffect(() => {
-    if (!isOpen) return;
-
-    previouslyFocusedRef.current = document.activeElement as HTMLElement | null;
-    closeButtonRef.current?.focus();
-    const previousOverflow = document.body.style.overflow;
-    document.body.style.overflow = "hidden";
-    const handleKeyDown = (event: KeyboardEvent) => {
-      if (event.key === "Escape") setIsOpen(false);
-    };
-    window.addEventListener("keydown", handleKeyDown);
-
-    return () => {
-      document.body.style.overflow = previousOverflow;
-      window.removeEventListener("keydown", handleKeyDown);
-      previouslyFocusedRef.current?.focus();
-    };
-  }, [isOpen]);
+  const closeDialog = useCallback(() => setIsOpen(false), []);
+  useDialogFocus(isOpen, dialogRef, closeDialog, closeButtonRef);
 
   const handleSelect = (intensity: string) => {
     setIsOpen(false);
@@ -115,14 +99,16 @@ const MoodMeter: React.FC<MoodMeterProps> = ({ onSuggest }) => {
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
             onClick={(event) => {
-              if (event.target === event.currentTarget) setIsOpen(false);
+              if (event.target === event.currentTarget) closeDialog();
             }}
             className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-slate-950/90 backdrop-blur-2xl"
           >
             <motion.div
+              ref={dialogRef}
               role="dialog"
               aria-modal="true"
               aria-labelledby="mood-dialog-title"
+              tabIndex={-1}
               initial={{ scale: 0.9, y: 20 }}
               animate={{ scale: 1, y: 0 }}
               exit={{ scale: 0.9, y: 20 }}

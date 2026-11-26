@@ -11,6 +11,18 @@ const MentalGym = () => {
   const [mode, setMode] = useState<'choice' | 'categories' | 'math' | 'spelling'>('choice');
   const [currentCategory, setCurrentCategory] = useState(categories[0]);
   const [mathStep, setMathStep] = useState(100);
+  const [mathDone, setMathDone] = useState(false);
+
+  const subtractSeven = () => {
+    const next = Math.max(0, mathStep - 7);
+    setMathStep(next);
+    if (next === 0) setMathDone(true);
+  };
+
+  const resetMath = () => {
+    setMathStep(100);
+    setMathDone(false);
+  };
 
   const nextCategory = () => {
     const idx = categories.indexOf(currentCategory);
@@ -60,11 +72,13 @@ const MentalGym = () => {
         {mode === 'math' && (
           <motion.div key="math" initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -10 }} className="space-y-6">
             <div className="text-xs font-black text-purple-400 uppercase tracking-[0.3em]">Current Number</div>
-            <h3 className="text-6xl font-black text-white tabular-nums">{mathStep}</h3>
-            <p className="text-white/40 italic">"Subtract 7 from the number above."</p>
+            <h3 className="text-6xl font-black text-white tabular-nums" role="status" aria-live="polite">{mathStep}</h3>
+            <p className="text-white/40 italic" role="status" aria-live="polite">
+              {mathDone ? "You reached zero — that's the end of this one." : "Subtract 7 from the number above."}
+            </p>
             <div className="flex justify-center space-x-4">
-              <Button onClick={() => setMathStep(prev => Math.max(0, prev - 7))} className="bg-purple-500 text-white rounded-full px-8">- 7</Button>
-              <Button variant="ghost" onClick={() => setMathStep(100)} className="text-white/20"><RotateCcw className="w-4 h-4" /></Button>
+              <Button onClick={subtractSeven} disabled={mathDone} className="bg-purple-500 text-white rounded-full px-8 disabled:opacity-30">- 7</Button>
+              <Button variant="ghost" onClick={resetMath} aria-label="Reset math challenge" className="text-white/20"><RotateCcw className="w-4 h-4" aria-hidden="true" /></Button>
             </div>
           </motion.div>
         )}

@@ -14,7 +14,6 @@ import {
   Clock,
   LayoutGrid,
 } from "lucide-react";
-import { Button } from "@/components/ui/button";
 import StormBackground from "@/components/grounding/StormBackground";
 import MoodMeter from "@/components/grounding/MoodMeter";
 import MindfulQuotes from "@/components/grounding/MindfulQuotes";
@@ -147,24 +146,24 @@ const Index = () => {
         </header>
 
         <motion.section variants={itemVariants} className="space-y-5" aria-labelledby="start-here-heading">
-          <div className="flex items-baseline justify-between gap-4 px-2">
+          <div className="flex flex-col gap-1 px-2 sm:flex-row sm:items-baseline sm:justify-between sm:gap-4">
             <h2 id="start-here-heading" className="text-[10px] md:text-xs font-black text-white/60 uppercase tracking-[0.4em]">
               Start here
             </h2>
-            <span className="text-[9px] md:text-[10px] text-white/25 uppercase tracking-widest text-right">
+            <span className="text-[9px] md:text-[10px] text-white/25 uppercase tracking-widest sm:text-right">
               Choose what fits right now
             </span>
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4 md:gap-6">
             {paths.map((path) => (
-              <Button
+              <button
                 key={path.id}
-                variant="outline"
+                type="button"
                 onClick={() => navigate(path.action)}
-                className="group h-auto min-h-[220px] md:min-h-[260px] flex flex-col items-start justify-between text-left rounded-[40px] border-white/10 bg-white/[0.03] hover:bg-white/[0.07] p-7 md:p-9 transition-all active:scale-[0.98]"
+                className="group flex min-h-[220px] w-full flex-col items-stretch justify-between gap-8 rounded-[40px] border border-white/10 bg-white/[0.03] p-7 text-left transition-all hover:bg-white/[0.07] active:scale-[0.98] md:min-h-[260px] md:p-9 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-sky-300"
               >
-                <div className="space-y-5 w-full">
+                <div className="w-full space-y-5">
                   <div className={`w-14 h-14 ${path.bg} ${path.accent} rounded-[22px] flex items-center justify-center`}>
                     <path.icon className="w-7 h-7" aria-hidden="true" />
                   </div>
@@ -176,10 +175,10 @@ const Index = () => {
                 <div className="w-full space-y-4">
                   <p className="text-xs md:text-sm text-white/40 font-light leading-relaxed">{path.description}</p>
                   <span className="flex items-center text-[10px] font-black uppercase tracking-widest text-sky-300">
-                    Go <ArrowRight className="ml-2 h-4 w-4 group-hover:translate-x-2 transition-transform" aria-hidden="true" />
+                    Go <ArrowRight className="ml-2 h-4 w-4 transition-transform group-hover:translate-x-2" aria-hidden="true" />
                   </span>
                 </div>
-              </Button>
+              </button>
             ))}
           </div>
         </motion.section>
@@ -190,67 +189,67 @@ const Index = () => {
               <h2 id="quick-access-heading" className="text-[10px] md:text-xs font-black text-white/60 uppercase tracking-[0.4em]">
                 Quick access
               </h2>
-              <Button
-                variant="link"
+              <button
+                type="button"
                 onClick={() => navigate("/tools")}
-                className="text-sky-400/60 text-[9px] md:text-[10px] font-bold uppercase tracking-widest hover:text-sky-300 h-auto p-0"
+                className="rounded p-1 text-[9px] md:text-[10px] font-bold uppercase tracking-widest text-sky-400/60 hover:text-sky-300 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-sky-300"
               >
                 View all {tools.length}
-              </Button>
+              </button>
             </div>
             <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
               {recentTool && (
-                <Button
-                  variant="outline"
+                <button
+                  type="button"
                   onClick={() => navigate(toolHref(recentTool.id))}
-                  className="h-auto min-h-[104px] justify-start rounded-[32px] border-white/10 bg-white/[0.02] hover:bg-white/[0.06] px-6 py-5 transition-all active:scale-[0.98]"
+                  className="flex min-h-[104px] w-full items-start gap-4 rounded-[32px] border border-white/10 bg-white/[0.02] px-6 py-5 text-left transition-all hover:bg-white/[0.06] active:scale-[0.98] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-sky-300"
                 >
-                  <div className="w-10 h-10 bg-sky-500/10 rounded-2xl flex items-center justify-center text-sky-400 shrink-0 mr-4">
+                  <div className="w-10 h-10 bg-sky-500/10 rounded-2xl flex items-center justify-center text-sky-400 shrink-0">
                     <Clock className="w-5 h-5" aria-hidden="true" />
                   </div>
-                  <div className="text-left">
+                  <div className="min-w-0">
                     <div className="text-[8px] md:text-[9px] font-bold text-white/25 uppercase tracking-widest">Last used</div>
                     <div className="text-sm md:text-base font-bold text-white">{recentTool.title}</div>
                   </div>
-                </Button>
+                </button>
               )}
               {favoriteTools.slice(0, recentTool ? 2 : 3).map((tool) => (
-                <Button
+                <button
                   key={tool.id}
-                  variant="outline"
+                  type="button"
                   onClick={() => navigate(toolHref(tool.id))}
-                  className="h-auto min-h-[104px] justify-start rounded-[32px] border-white/10 bg-white/[0.02] hover:bg-white/[0.06] px-6 py-5 transition-all active:scale-[0.98]"
+                  className="flex min-h-[104px] w-full items-start gap-4 rounded-[32px] border border-white/10 bg-white/[0.02] px-6 py-5 text-left transition-all hover:bg-white/[0.06] active:scale-[0.98] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-sky-300"
                 >
-                  <div className="w-10 h-10 bg-amber-500/10 rounded-2xl flex items-center justify-center text-amber-400 shrink-0 mr-4">
+                  <div className="w-10 h-10 bg-amber-500/10 rounded-2xl flex items-center justify-center text-amber-400 shrink-0">
                     <Star className="w-5 h-5 fill-current" aria-hidden="true" />
                   </div>
-                  <div className="text-left">
+                  <div className="min-w-0">
                     <div className="text-[8px] md:text-[9px] font-bold text-white/25 uppercase tracking-widest">Favorite</div>
                     <div className="text-sm md:text-base font-bold text-white">{tool.title}</div>
                   </div>
-                </Button>
+                </button>
               ))}
             </div>
           </motion.section>
         )}
 
         <motion.div variants={itemVariants}>
-          <Button
-            variant="ghost"
+          <button
+            type="button"
             onClick={() => navigate("/tools")}
-            className="w-full h-auto min-h-[100px] justify-between rounded-[36px] border border-white/10 bg-white/[0.02] hover:bg-white/[0.06] px-8 md:px-12 text-left transition-all"
+            className="group flex min-h-[100px] w-full items-center justify-between gap-6 rounded-[36px] border border-white/10 bg-white/[0.02] px-8 text-left transition-all hover:bg-white/[0.06] md:px-12 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-sky-300"
           >
-            <span className="flex items-center gap-5">
-              <span className="w-12 h-12 bg-purple-500/10 rounded-2xl flex items-center justify-center text-purple-400">
+            <span className="flex min-w-0 items-center gap-5">
+              <span className="w-12 h-12 bg-purple-500/10 rounded-2xl flex items-center justify-center text-purple-400 shrink-0">
                 <LayoutGrid className="w-6 h-6" aria-hidden="true" />
               </span>
-              <span>
+              <span className="min-w-0">
                 <span className="block text-lg md:text-2xl font-bold text-white">Browse the whole toolbox</span>
                 <span className="block text-xs md:text-sm text-white/40 font-light">All {tools.length} tools, searchable and sorted by what you need.</span>
               </span>
             </span>
-            <ArrowRight className="h-6 w-6 text-white/40 group-hover:translate-x-2 transition-transform" aria-hidden="true" />
-          </Button>
+            <ArrowRight className="h-6 w-6 shrink-0 text-white/40 transition-transform group-hover:translate-x-2" aria-hidden="true" />
+          </button>
         </motion.div>
 
         <CrisisFooter />

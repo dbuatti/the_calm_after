@@ -20,6 +20,7 @@ import { Input } from "@/components/ui/input";
 import { Slider } from "@/components/ui/slider";
 import StormBackground from "@/components/grounding/StormBackground";
 import QuietModeToggle from "@/components/grounding/QuietModeToggle";
+import { useDialogFocus } from "@/hooks/use-dialog-focus";
 import { categories, getToolById, intensities, tools } from "@/data/tools";
 
 const FAVORITES_KEY = "grounding-favorites";
@@ -50,7 +51,6 @@ const Tools = () => {
   const dialogRef = useRef<HTMLDivElement>(null);
   const closeButtonRef = useRef<HTMLButtonElement>(null);
   const searchInputRef = useRef<HTMLInputElement>(null);
-  const previouslyFocusedRef = useRef<HTMLElement | null>(null);
 
   // Filters and the open tool live in the URL so Home's shortcuts, the check-in
   // suggestions and the browser back button all describe the same state.
@@ -99,47 +99,7 @@ const Tools = () => {
     window.dispatchEvent(new CustomEvent("set-calm-level", { detail: calmLevel }));
   }, [calmLevel]);
 
-  // Dialog focus and keyboard handling: Escape always closes, Tab stays inside.
-  useEffect(() => {
-    if (!activeTool) return;
-
-    previouslyFocusedRef.current = document.activeElement as HTMLElement | null;
-    closeButtonRef.current?.focus();
-    const previousOverflow = document.body.style.overflow;
-    document.body.style.overflow = "hidden";
-
-    const handleKeyDown = (event: KeyboardEvent) => {
-      if (event.key === "Escape") {
-        event.preventDefault();
-        closeTool();
-        return;
-      }
-      if (event.key !== "Tab" || !dialogRef.current) return;
-
-      const focusable = Array.from(
-        dialogRef.current.querySelectorAll<HTMLElement>(
-          'button:not([disabled]), [href], input:not([disabled]), [tabindex]:not([tabindex="-1"])',
-        ),
-      );
-      if (focusable.length === 0) return;
-      const first = focusable[0];
-      const last = focusable[focusable.length - 1];
-      if (event.shiftKey && document.activeElement === first) {
-        event.preventDefault();
-        last.focus();
-      } else if (!event.shiftKey && document.activeElement === last) {
-        event.preventDefault();
-        first.focus();
-      }
-    };
-
-    window.addEventListener("keydown", handleKeyDown);
-    return () => {
-      document.body.style.overflow = previousOverflow;
-      window.removeEventListener("keydown", handleKeyDown);
-      previouslyFocusedRef.current?.focus();
-    };
-  }, [activeTool, closeTool]);
+  useDialogFocus(Boolean(activeTool), dialogRef, closeTool, closeButtonRef);
 
   const toggleFavorite = (event: React.MouseEvent, id: string) => {
     event.stopPropagation();
@@ -456,6 +416,7 @@ const Tools = () => {
               role="dialog"
               aria-modal="true"
               aria-labelledby="tool-dialog-title"
+              tabIndex={-1}
               initial={{ scale: 0.9, y: 40, opacity: 0 }}
               animate={{ scale: 1, y: 0, opacity: 1 }}
               exit={{ scale: 0.9, y: 40, opacity: 0 }}
